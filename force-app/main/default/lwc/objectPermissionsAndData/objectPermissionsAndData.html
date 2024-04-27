@@ -6,8 +6,8 @@
                     <lightning-combobox name="object" label="Object"
                         placeholder="Select an object..."></lightning-combobox>
                     <!--falta value options-->
-                    <lightning-combobox name="profile" label="Profile"
-                        placeholder="Select a profile..."></lightning-combobox>
+                    <lightning-combobox name="profile" label="Profile" placeholder="Select a profile..."
+                        options={profileOptions} onchange={handleProfileChange}></lightning-combobox>
                 </lightning-layout-item>
                 <lightning-layout-item>
                     <lightning-input type="checkbox" label="Compare" name="compare"></lightning-input>
