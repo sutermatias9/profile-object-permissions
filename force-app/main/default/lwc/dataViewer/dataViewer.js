@@ -1,5 +1,6 @@
 import { LightningElement, wire } from 'lwc';
 import getProfiles from '@salesforce/apex/ProfileHandler.getProfiles';
+import getSObjects from '@salesforce/apex/SObjectHandler.getSObjects';
 
 export default class DataViewer extends LightningElement {
     profileOptions;
@@ -18,8 +19,25 @@ export default class DataViewer extends LightningElement {
         }
     }
 
+    @wire(getSObjects)
+    wiredObjects({ data, error }) {
+        if (data) {
+            const sObjects = data;
+            const apiNames = Object.keys(sObjects);
+
+            apiNames.sort();
+
+            this.sObjectOptions = apiNames.map((apiName) => {
+                return { label: sObjects[apiName], value: apiName };
+            });
+        } else if (error) {
+            console.error(error);
+        }
+    }
+
     handleProfileChange(event) {
         this.profileSelected = event.detail.value;
-        console.log(JSON.stringify(this.profileSelected));
     }
+
+    handleSObjectChange() {}
 }
