@@ -6,8 +6,10 @@ export default class ObjectPermissionsAndData extends LightningElement {
     profileOptions;
     mainProfile;
     compareProfile;
+    isCompareComboboxDisabled = true;
 
     sObjectOptions;
+    sObjectSelected;
 
     @wire(getProfiles)
     wiredProfiles({ data, error }) {
@@ -42,18 +44,25 @@ export default class ObjectPermissionsAndData extends LightningElement {
     handleProfileChange(event) {
         const profileSelected = event.detail.value;
 
-        if (event.currentTarget.name === 'main-profile') {
+        if (event.currentTarget.classList.contains('main-profile')) {
             this.mainProfile = profileSelected;
         } else {
             this.compareProfile = profileSelected;
         }
+
+        console.log('main profile: ', JSON.stringify(this.mainProfile));
+        console.log('compare profile: ', JSON.stringify(this.compareProfile));
     }
 
     handleSObjectChange(event) {
         console.log(event.detail.value);
+        this.sObjectSelected = event.detail.value;
     }
 
-    // TODO Checkbox functionality
+    handleCheckboxChange(event) {
+        this.isCompareComboboxDisabled = !event.detail.checked;
+    }
+
     // TODO Make table
     // TODO Show fields when button click
     // TODO Compare permissions with 2nd profile

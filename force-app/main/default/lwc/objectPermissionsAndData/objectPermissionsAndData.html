@@ -3,16 +3,16 @@
         <div class="slds-var-p-around_medium">
             <lightning-layout>
                 <lightning-layout-item>
-                    <lightning-combobox name="object" label="Object" placeholder="Select an object..."
-                        options={sObjectOptions} onchange={handleSObjectChange}></lightning-combobox>
-                    <!--falta value options-->
-                    <lightning-combobox name="main-profile" label="Profile" placeholder="Select a profile..."
+                    <lightning-combobox label="Object" placeholder="Select an object..." options={sObjectOptions}
+                        onchange={handleSObjectChange}></lightning-combobox>
+                    <lightning-combobox class="main-profile" label="Profile" placeholder="Select a profile..."
                         options={profileOptions} onchange={handleProfileChange}></lightning-combobox>
                 </lightning-layout-item>
                 <lightning-layout-item>
-                    <lightning-input type="checkbox" label="Compare" name="compare"></lightning-input>
-                    <lightning-combobox name="compare-profile" label="Profile" placeholder="Select a profile..."
-                        disabled></lightning-combobox>
+                    <lightning-input type="checkbox" label="Compare" onchange={handleCheckboxChange}></lightning-input>
+                    <lightning-combobox class="compare" label="Profile" placeholder="Select a profile..."
+                        options={profileOptions} disabled={isCompareComboboxDisabled}
+                        onchange={handleProfileChange}></lightning-combobox>
                 </lightning-layout-item>
                 <lightning-layout-item>
                     <lightning-button variant="brand-outline" label="Show Field Permissions"
