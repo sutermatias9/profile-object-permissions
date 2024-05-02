@@ -15,8 +15,8 @@ export default class ObjectPermissionsAndData extends LightningElement {
     wiredProfiles({ data, error }) {
         if (data) {
             // Profile combobox options
-            this.profileOptions = data.map((p) => {
-                return { label: p.Name, value: p.Name };
+            this.profileOptions = Object.entries(data).map(([Id, Name]) => {
+                return { label: Name, value: Id };
             });
         } else if (error) {
             console.error(error);
@@ -43,6 +43,7 @@ export default class ObjectPermissionsAndData extends LightningElement {
 
     handleProfileChange(event) {
         const profileSelected = event.detail.value;
+        console.log(profileSelected);
 
         if (event.currentTarget.classList.contains('main-profile')) {
             this.mainProfile = profileSelected;
