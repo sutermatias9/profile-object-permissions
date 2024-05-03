@@ -13,4 +13,32 @@ public with sharing class ProfileHandler {
             throw new AuraHandledException(e.getMessage());
         }
     }
+
+    @AuraEnabled
+    public static Map<String, Map<String, Boolean>> getFieldPermissions(String sObjectName, Id profileId) {
+        Map<String, Map<String, Boolean>> profileFieldsPermissions = new Map<String, Map<String, Boolean>>();
+        try {
+            List<FieldPermissions> fps = [
+                SELECT Id, Field, ParentId, PermissionsEdit, PermissionsRead, Parent.Profileid, Parent.Profile.Name
+                FROM FieldPermissions
+                WHERE Parent.IsOwnedByProfile = TRUE AND SobjectType = :sObjectName AND Parent.ProfileId = :profileId
+                ORDER BY Field
+            ];
+
+            for (FieldPermissions fp : fps) {
+                Map<String, Boolean> permissions = new Map<String, Boolean>();
+                permissions.put('Readable', fp.PermissionsRead);
+                permissions.put('Editable', fp.PermissionsEdit);
+                profileFieldsPermissions.put(fp.Field, permissions);
+            }
+
+            if (!profileFieldsPermissions.isEmpty()) {
+                return profileFieldsPermissions;
+            }
+
+            return null;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
 }
