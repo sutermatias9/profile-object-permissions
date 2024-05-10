@@ -13,7 +13,7 @@ public with sharing class ProfileHandler {
             throw new AuraHandledException(e.getMessage());
         }
     }
-
+    // Si no tengo read permission directamente no me aparece el campo
     @AuraEnabled
     public static Map<String, Map<String, Boolean>> getFieldPermissions(String sObjectName, Id profileId) {
         Map<String, Map<String, Boolean>> profileFieldsPermissions = new Map<String, Map<String, Boolean>>();

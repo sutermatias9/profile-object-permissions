@@ -10,8 +10,6 @@ const COLUMNS = [
     { label: 'Editable', fieldName: 'edit' }
 ];
 
-// const DATA = [{ create: 'True', edit: 'True' }];
-
 export default class ObjectPermissionsAndData extends LightningElement {
     profileOptions;
     mainProfile = null;
@@ -91,10 +89,8 @@ export default class ObjectPermissionsAndData extends LightningElement {
 
     async buildTable() {
         try {
-            console.log('entranding');
             const mainProfilePermissions = await this.getProfilePermissions(this.mainProfile);
-            console.log('profilePermi', mainProfilePermissions);
-            console.log(JSON.stringify(Object.entries(mainProfilePermissions)));
+
             // let compareProfilePermissions;
 
             // necesito tabla aparte para compare
@@ -104,7 +100,6 @@ export default class ObjectPermissionsAndData extends LightningElement {
 
             // hacer tablita
             this.mainProfileData = Object.entries(mainProfilePermissions).map(([objectField, permissions]) => {
-                console.log(getFieldApiName(objectField));
                 return {
                     field: getFieldApiName(objectField),
                     readable: permissions.Readable,

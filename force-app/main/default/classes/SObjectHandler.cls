@@ -28,6 +28,22 @@ public with sharing class SObjectHandler {
         return null;
     }
 
+    public static List<String> getFieldList(String sObjectName) {
+        Schema.DescribeSObjectResult sobjectDescribe = Schema.getGlobalDescribe().get(sObjectName).getDescribe();
+        List<Schema.SObjectField> fieldList = sobjectDescribe.fields.getMap().values();
+        return getFieldsAsString(fieldList);
+    }
+
+    private static List<String> getFieldsAsString(List<Schema.SObjectField> fieldList) {
+        List<String> fields = new List<String>();
+
+        for (Schema.SObjectField field : fieldList) {
+            fields.add(field.getDescribe().getName());
+        }
+
+        return fields;
+    }
+
     private static Boolean meetsNameCriteria(String name) {
         return !name.contains('ChangeEvent') &&
             !name.contains('Feed') &&
