@@ -1,3 +1,4 @@
+<!-- sldsValidatorIgnore -->
 <template>
     <lightning-card title="Field Permissions">
         <div class="slds-var-p-around_medium">
@@ -14,11 +15,16 @@
                         options={profileOptions} disabled={isCompareComboboxDisabled}
                         onchange={handleProfileChange}></lightning-combobox>
                 </lightning-layout-item>
-                <lightning-layout-item>
-                    <lightning-button variant="brand-outline" label="Show Field Permissions"
-                        onclick={handleClick}></lightning-button>
-                </lightning-layout-item>
             </lightning-layout>
         </div>
+        <template lwc:if={areOptionsSelected}>
+            <lightning-datatable key-field="field" data={mainProfileData} columns={columns} show-row-number-column
+                hide-checkbox-column></lightning-datatable>
+            <template lwc:if={compareProfile}>
+                <lightning-datatable key-field="field" data={mainProfilePermissions} columns={columns}
+                    show-row-number-column hide-checkbox-column></lightning-datatable>
+            </template>
+        </template>
+
     </lightning-card>
 </template>
