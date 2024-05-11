@@ -28,20 +28,22 @@ public with sharing class SObjectHandler {
         return null;
     }
 
-    public static List<String> getFieldList(String sObjectName) {
+    public static List<String> getFields(String sObjectName) {
+        List<Schema.SObjectField> filteredFields = new List<Schema.SObjectField>();
+
         Schema.DescribeSObjectResult sobjectDescribe = Schema.getGlobalDescribe().get(sObjectName).getDescribe();
         List<Schema.SObjectField> fieldList = sobjectDescribe.fields.getMap().values();
-        return getFieldsAsString(fieldList);
-    }
 
-    private static List<String> getFieldsAsString(List<Schema.SObjectField> fieldList) {
-        List<String> fields = new List<String>();
+        for (Schema.SObjectField f : fieldList) {
+            Schema.DescribeFieldResult df = f.getDescribe();
+            String name = df.getName();
 
-        for (Schema.SObjectField field : fieldList) {
-            fields.add(field.getDescribe().getName());
+            if (df.isPermissionable() && !Utils.isAddressComponent(name)) {
+                filteredFields.add(f);
+            }
         }
 
-        return fields;
+        return Utils.getFieldsAsString(filteredFields);
     }
 
     private static Boolean meetsNameCriteria(String name) {
