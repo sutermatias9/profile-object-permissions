@@ -13,13 +13,13 @@ public with sharing class ProfileHandler {
             throw new AuraHandledException(e.getMessage());
         }
     }
-    // Si no tengo read permission directamente no me aparece el campo
+
     @AuraEnabled
     public static Map<String, Map<String, Boolean>> getFieldPermissions(String sObjectName, Id profileId) {
         Map<String, Map<String, Boolean>> profileFieldsPermissions = new Map<String, Map<String, Boolean>>();
         try {
             List<FieldPermissions> fps = [
-                SELECT Id, Field, ParentId, PermissionsEdit, PermissionsRead, Parent.Profileid, Parent.Profile.Name
+                SELECT Id, Field, PermissionsEdit, PermissionsRead
                 FROM FieldPermissions
                 WHERE Parent.IsOwnedByProfile = TRUE AND SobjectType = :sObjectName AND Parent.ProfileId = :profileId
                 ORDER BY Field
@@ -29,16 +29,44 @@ public with sharing class ProfileHandler {
                 Map<String, Boolean> permissions = new Map<String, Boolean>();
                 permissions.put('Readable', fp.PermissionsRead);
                 permissions.put('Editable', fp.PermissionsEdit);
-                profileFieldsPermissions.put(fp.Field, permissions);
+                profileFieldsPermissions.put(getFieldOnly(fp.Field), permissions);
             }
 
-            if (!profileFieldsPermissions.isEmpty()) {
-                return profileFieldsPermissions;
+            Set<String> fieldsAdded = profileFieldsPermissions.keySet();
+
+            if (areMissingFields(sObjectName, fieldsAdded)) {
+                profileFieldsPermissions.putAll(getMissingFields(sObjectName, fieldsAdded));
             }
 
-            return null;
+            return profileFieldsPermissions;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
+    }
+
+    private static Boolean areMissingFields(String sObjectName, Set<String> fieldsAdded) {
+        return fieldsAdded.size() < SObjectHandler.getFields(sObjectName).size();
+    }
+
+    private static Map<String, Map<String, Boolean>> getMissingFields(String sObjectName, Set<String> fieldNames) {
+        Map<String, Map<String, Boolean>> missingPermissions = new Map<String, Map<String, Boolean>>();
+
+        for (String field : SObjectHandler.getFields(sObjectName)) {
+            System.debug(field + ' is in list? ' + fieldNames.contains(field));
+            if (!fieldNames.contains(field)) {
+                missingPermissions.put(field, new Map<String, Boolean>{ 'Readable' => false, 'Editable' => false });
+            }
+        }
+
+        if (!missingPermissions.isEmpty()) {
+            return missingPermissions;
+        }
+
+        return null;
+    }
+
+    private static String getFieldOnly(String sObjectField) {
+        Integer fieldIndex = sObjectField.indexOf('.') + 1;
+        return sObjectField.substring(fieldIndex);
     }
 }
