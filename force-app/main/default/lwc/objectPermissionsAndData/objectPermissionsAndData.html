@@ -21,7 +21,7 @@
             <lightning-datatable key-field="field" data={mainProfileData} columns={columns} show-row-number-column
                 hide-checkbox-column></lightning-datatable>
             <template lwc:if={compareProfile}>
-                <lightning-datatable key-field="field" data={mainProfilePermissions} columns={columns}
+                <lightning-datatable key-field="field" data={compareProfileData} columns={columns}
                     show-row-number-column hide-checkbox-column></lightning-datatable>
             </template>
         </template>

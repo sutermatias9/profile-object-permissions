@@ -1,5 +1,4 @@
 import { LightningElement, wire } from 'lwc';
-import { getFieldApiName } from 'c/ldsUtils';
 import getProfiles from '@salesforce/apex/ProfileHandler.getProfiles';
 import getSObjects from '@salesforce/apex/SObjectHandler.getSObjects';
 import getFieldPermissions from '@salesforce/apex/ProfileHandler.getFieldPermissions';
@@ -17,10 +16,11 @@ export default class ObjectPermissionsAndData extends LightningElement {
     isCompareComboboxDisabled = true;
 
     sObjectOptions;
-    sObjectSelected;
+    sObjectSelected = null;
 
     columns = COLUMNS;
     mainProfileData;
+    compareProfileData;
 
     get areOptionsSelected() {
         return this.mainProfile !== null && this.sObjectSelected !== null;
@@ -91,21 +91,14 @@ export default class ObjectPermissionsAndData extends LightningElement {
         try {
             const mainProfilePermissions = await this.getProfilePermissions(this.mainProfile);
 
-            // let compareProfilePermissions;
+            let compareProfilePermissions;
 
-            // necesito tabla aparte para compare
-            // if (!this.isCompareComboboxDisabled && this.compareProfile) {
-            //     compareProfilePermissions = await this.getProfilePermissions(this.compareProfile);
-            // }
+            if (!this.isCompareComboboxDisabled && this.compareProfile) {
+                compareProfilePermissions = await this.getProfilePermissions(this.compareProfile);
+            }
 
-            // hacer tablita
-            this.mainProfileData = Object.entries(mainProfilePermissions).map(([objectField, permissions]) => {
-                return {
-                    field: getFieldApiName(objectField),
-                    readable: permissions.Readable,
-                    edit: permissions.Editable
-                };
-            });
+            this.mainProfileData = this.convertToTableData(mainProfilePermissions);
+            this.compareProfileData = this.convertToTableData(compareProfilePermissions);
         } catch (e) {
             console.log(e.message);
         }
@@ -125,5 +118,19 @@ export default class ObjectPermissionsAndData extends LightningElement {
         }
     }
 
-    // TODO Compare permissions with 2nd profile
+    convertToTableData(profilePermissions) {
+        return Object.entries(profilePermissions).map(([fieldName, permissions]) => {
+            return {
+                field: fieldName,
+                readable: permissions.Readable,
+                edit: permissions.Editable
+            };
+        });
+    }
+
+    // TODO orden alfabetico
+    // TODO testear apex
+    // TODO set cell color based on the value
+    // TODO Posicionar bien todo
+    // TODO Documentar
 }
