@@ -28,4 +28,18 @@ public with sharing class Utils {
         }
         return false;
     }
+
+    public static Map<String, Object> sortMapByKeys(Map<String, Object> m) {
+        Map<String, Object> orderedMap = new Map<String, Object>();
+        Map<String, Object> unorderedMap = new Map<String, Object>(m);
+        List<String> keys = new List<String>(unorderedMap.keySet());
+
+        keys.sort();
+
+        for (String key : keys) {
+            orderedMap.put(key, unorderedMap.get(key));
+        }
+
+        return orderedMap;
+    }
 }
