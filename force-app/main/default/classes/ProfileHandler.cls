@@ -38,9 +38,9 @@ public with sharing class ProfileHandler {
                 profileFieldsPermissions.putAll(getMissingFields(sObjectName, fieldsAdded));
             }
 
-            return profileFieldsPermissions;
+            return sortMap(profileFieldsPermissions);
         } catch (Exception e) {
-            throw new AuraHandledException(e.getMessage());
+            throw new AuraHandledException('getFieldPermissions:' + e.getMessage());
         }
     }
 
@@ -52,7 +52,6 @@ public with sharing class ProfileHandler {
         Map<String, Map<String, Boolean>> missingPermissions = new Map<String, Map<String, Boolean>>();
 
         for (String field : SObjectHandler.getFields(sObjectName)) {
-            System.debug(field + ' is in list? ' + fieldNames.contains(field));
             if (!fieldNames.contains(field)) {
                 missingPermissions.put(field, new Map<String, Boolean>{ 'Readable' => false, 'Editable' => false });
             }
@@ -68,5 +67,18 @@ public with sharing class ProfileHandler {
     private static String getFieldOnly(String sObjectField) {
         Integer fieldIndex = sObjectField.indexOf('.') + 1;
         return sObjectField.substring(fieldIndex);
+    }
+
+    private static Map<String, Map<String, Boolean>> sortMap(Map<String, Map<String, Boolean>> unorderedMap) {
+        Map<String, Map<String, Boolean>> orderedMap = new Map<String, Map<String, Boolean>>();
+
+        Map<String, Object> input = (Map<String, Object>) unorderedMap;
+        Map<String, Object> sorted = Utils.sortMapByKeys(input);
+
+        for (String key : sorted.keySet()) {
+            orderedMap.put(key, (Map<String, Boolean>) sorted.get(key));
+        }
+
+        return orderedMap;
     }
 }
