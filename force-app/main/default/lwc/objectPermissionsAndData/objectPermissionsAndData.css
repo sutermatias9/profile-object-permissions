@@ -1,21 +1,4 @@
 .table-container {
-    height: 70vh;
+    max-height: 70vh;
+    overflow-y: auto;
 }
-
-/* table > thead {
-    background-color: #003049;
-}
-
-.has-permission {
-    background-color: #fdf0d5;
-}
-
-.no-permission {
-    background-color: #c1121f;
-    color: white;
-}
-
-.field {
-    font-style: italic;
-    background-color: #669bbc;
-} */
