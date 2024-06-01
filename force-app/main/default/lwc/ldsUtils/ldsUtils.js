@@ -1,9 +1,3 @@
-// Example: Account.Type => Type
-export function getFieldApiName(objectField) {
-    const fieldIndex = objectField.indexOf('.') + 1;
-    return objectField.slice(fieldIndex);
-}
-
 /**
  * Reduces one or more LDS errors into a string[] of error messages.
  * @param {FetchResponse|FetchResponse[]} errors
