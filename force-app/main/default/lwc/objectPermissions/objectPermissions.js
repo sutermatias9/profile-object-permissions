@@ -1,12 +1,41 @@
 import { LightningElement, wire } from 'lwc';
+import { loadStyle } from 'lightning/platformResourceLoader';
+import cellColors from '@salesforce/resourceUrl/cellColors';
+
 import getProfiles from '@salesforce/apex/ProfileHandler.getProfiles';
 import getSObjects from '@salesforce/apex/SObjectHandler.getSObjects';
 import getFieldPermissions from '@salesforce/apex/ProfileHandler.getFieldPermissions';
 
 const COLUMNS = [
-    { label: 'Field', fieldName: 'field' },
-    { label: 'Readable', fieldName: 'readable' },
-    { label: 'Editable', fieldName: 'edit' }
+    {
+        label: 'Field',
+        fieldName: 'field',
+        hideDefaultActions: true,
+        initialWidth: 120,
+        cellAttributes: {
+            class: { fieldName: 'fieldClass' }
+        }
+    },
+    {
+        label: 'Readable',
+        fieldName: 'readable',
+        fixedWidth: 100,
+        hideDefaultActions: true,
+        cellAttributes: {
+            class: { fieldName: 'readClass' },
+            alignment: 'center'
+        }
+    },
+    {
+        label: 'Editable',
+        fieldName: 'editable',
+        fixedWidth: 100,
+        hideDefaultActions: true,
+        cellAttributes: {
+            class: { fieldName: 'editClass' },
+            alignment: 'center'
+        }
+    }
 ];
 
 export default class ObjectPermissionsAndData extends LightningElement {
@@ -24,6 +53,13 @@ export default class ObjectPermissionsAndData extends LightningElement {
 
     get areOptionsSelected() {
         return this.mainProfile !== null && this.sObjectSelected !== null;
+    }
+
+    connectedCallback() {
+        console.log('Connected Callback');
+        loadStyle(this, cellColors)
+            .then(() => console.log('Static Resource loaded'))
+            .catch((e) => console.log('Error loading cellColors ' + e));
     }
 
     @wire(getProfiles)
@@ -120,17 +156,17 @@ export default class ObjectPermissionsAndData extends LightningElement {
 
     convertToTableData(profilePermissions) {
         return Object.entries(profilePermissions).map(([fieldName, permissions]) => {
+            const readable = permissions.Readable;
+            const editable = permissions.Editable;
+
             return {
                 field: fieldName,
-                readable: permissions.Readable,
-                edit: permissions.Editable
+                readable,
+                editable,
+                readClass: readable ? 'has-permission' : 'no-permission',
+                editClass: editable ? 'has-permission' : 'no-permission',
+                fieldClass: 'field'
             };
         });
     }
-
-    // TODO orden alfabetico
-    // TODO testear apex
-    // TODO set cell color based on the value
-    // TODO Posicionar bien todo
-    // TODO Documentar
 }
