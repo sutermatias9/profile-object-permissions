@@ -1,0 +1,13 @@
+<template>
+    <lightning-card>
+        <lightning-tabset>
+            <lightning-tab label="Object Permissions" title="2nd tab extended title">
+                <c-object-permissions profiles={profiles} sobjects={sobjects}></c-object-permissions>
+            </lightning-tab>
+            <lightning-tab label="Field Permissions">
+                <c-field-permissions profiles={profiles} sobjects={sObjects}
+                    table-colors={tableColors}></c-field-permissions>
+            </lightning-tab>
+        </lightning-tabset>
+    </lightning-card>
+</template>
