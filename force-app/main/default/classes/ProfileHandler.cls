@@ -15,6 +15,46 @@ public with sharing class ProfileHandler {
     }
 
     @AuraEnabled
+    public static Map<String, Map<String, Boolean>> getObjectPermissions(Id profileId) {
+        Map<String, Map<String, Boolean>> profileObjectPermissions = new Map<String, Map<String, Boolean>>();
+        try {
+            List<ObjectPermissions> ops = [
+                SELECT
+                    SobjectType,
+                    PermissionsRead,
+                    PermissionsCreate,
+                    PermissionsEdit,
+                    PermissionsDelete,
+                    PermissionsViewAllRecords,
+                    PermissionsModifyAllRecords
+                FROM ObjectPermissions
+                WHERE Parent.isOwnedByProfile = TRUE AND Parent.ProfileId = :profileId
+            ];
+
+            for (ObjectPermissions op : ops) {
+                Map<String, Boolean> permissions = new Map<String, Boolean>();
+                permissions.put('Read', op.PermissionsRead);
+                permissions.put('Create', op.PermissionsCreate);
+                permissions.put('Edit', op.PermissionsEdit);
+                permissions.put('Delete', op.PermissionsDelete);
+                permissions.put('View All', op.PermissionsViewAllRecords);
+                permissions.put('Modify All', op.PermissionsModifyAllRecords);
+                profileObjectPermissions.put(op.SobjectType, permissions);
+            }
+
+            Set<String> objectsAdded = profileObjectPermissions.keySet();
+
+            if (areMissingObjects(objectsAdded)) {
+                profileObjectPermissions.putAll(getMissingObjects(objectsAdded));
+            }
+
+            return profileObjectPermissions;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled
     public static Map<String, Map<String, Boolean>> getFieldPermissions(String sObjectName, Id profileId) {
         Map<String, Map<String, Boolean>> profileFieldsPermissions = new Map<String, Map<String, Boolean>>();
         try {
@@ -48,6 +88,10 @@ public with sharing class ProfileHandler {
         return fieldsAdded.size() < SObjectHandler.getFields(sObjectName).size();
     }
 
+    private static Boolean areMissingObjects(Set<String> objectsAdded) {
+        return objectsAdded.size() < SObjectHandler.getSObjects().size();
+    }
+
     private static Map<String, Map<String, Boolean>> getMissingFields(String sObjectName, Set<String> fieldNames) {
         Map<String, Map<String, Boolean>> missingPermissions = new Map<String, Map<String, Boolean>>();
 
@@ -62,6 +106,28 @@ public with sharing class ProfileHandler {
         }
 
         return null;
+    }
+
+    private static Map<String, Map<String, Boolean>> getMissingObjects(Set<String> objectsAdded) {
+        Map<String, Map<String, Boolean>> missingPermissions = new Map<String, Map<String, Boolean>>();
+
+        for (String objectName : SObjectHandler.getSObjects().keySet()) {
+            if (!objectsAdded.contains(objectName)) {
+                missingPermissions.put(
+                    objectName,
+                    new Map<String, Boolean>{
+                        'Read' => false,
+                        'Create' => false,
+                        'Edit' => false,
+                        'Delete' => false,
+                        'View All' => false,
+                        'Modify All' => false
+                    }
+                );
+            }
+        }
+
+        return missingPermissions;
     }
 
     private static String getFieldOnly(String sObjectField) {
