@@ -37,8 +37,8 @@ public with sharing class ProfileHandler {
                 permissions.put('Create', op.PermissionsCreate);
                 permissions.put('Edit', op.PermissionsEdit);
                 permissions.put('Delete', op.PermissionsDelete);
-                permissions.put('View All', op.PermissionsViewAllRecords);
-                permissions.put('Modify All', op.PermissionsModifyAllRecords);
+                permissions.put('ViewAll', op.PermissionsViewAllRecords);
+                permissions.put('ModifyAll', op.PermissionsModifyAllRecords);
                 profileObjectPermissions.put(op.SobjectType, permissions);
             }
 
@@ -48,7 +48,7 @@ public with sharing class ProfileHandler {
                 profileObjectPermissions.putAll(getMissingObjects(objectsAdded));
             }
 
-            return profileObjectPermissions;
+            return sortMap(profileObjectPermissions);
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
@@ -120,8 +120,8 @@ public with sharing class ProfileHandler {
                         'Create' => false,
                         'Edit' => false,
                         'Delete' => false,
-                        'View All' => false,
-                        'Modify All' => false
+                        'ViewAll' => false,
+                        'ModifyAll' => false
                     }
                 );
             }
