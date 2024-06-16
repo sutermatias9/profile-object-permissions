@@ -1,13 +1,36 @@
 <template>
     <lightning-card>
-        <lightning-tabset>
-            <lightning-tab label="Object Permissions" title="2nd tab extended title">
-                <c-object-permissions profiles={profiles} sobjects={sobjects}></c-object-permissions>
-            </lightning-tab>
-            <lightning-tab label="Field Permissions">
-                <c-field-permissions profiles={profiles} sobjects={sObjects}
-                    table-colors={tableColors}></c-field-permissions>
-            </lightning-tab>
-        </lightning-tabset>
+        <div class="slds-grid slds-var-p-around_medium">
+            <div class="slds-col slds-size_1-of-3 ">
+                <lightning-combobox label="View" class="view-cbx"></lightning-combobox>
+                <!--poner default object permission-->
+            </div>
+            <div class="slds-col slds-size_1-of-3">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col">
+                        <lightning-combobox label="Profile"></lightning-combobox>
+                    </div>
+                    <div class="slds-col">
+                        <lightning-combobox label="Compare with"></lightning-combobox>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="table-container">
+            <template lwc:if={areOptionsSelected}>
+                <div class="slds-grid slds-grid_align-space">
+                    <div class="slds-col">
+                        <lightning-datatable key-field="field" data={mainProfileData} columns={columns}
+                            hide-checkbox-column></lightning-datatable>
+                    </div>
+                    <template lwc:if={compareProfile}>
+                        <div class="slds-col">
+                            <lightning-datatable key-field="field" data={compareProfileData} columns={columns}
+                                hide-checkbox-column></lightning-datatable>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
     </lightning-card>
 </template>
