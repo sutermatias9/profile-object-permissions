@@ -1,32 +1,42 @@
+<!-- sldsValidatorIgnore -->
 <template>
     <lightning-card>
         <div class="slds-grid slds-var-p-around_medium">
-            <div class="slds-col slds-size_1-of-3 ">
-                <lightning-combobox label="View" class="view-cbx"></lightning-combobox>
-                <!--poner default object permission-->
+            <div class="slds-col slds-size_1-of-4">
+                <lightning-combobox label="View" class="view-cbx" value={viewSelected} options={viewOptions}
+                    onchange={handleViewChange}></lightning-combobox>
             </div>
-            <div class="slds-col slds-size_1-of-3">
+            <div class="slds-col slds-size_2-of-4">
                 <div class="slds-grid slds-gutters">
+                    <template lwc:if={isFieldView}>
+                        <div class="slds-col">
+                            <lightning-combobox label="Object" options={sObjects}
+                                onchange={handleObjectChange}></lightning-combobox>
+                        </div>
+                    </template>
                     <div class="slds-col">
-                        <lightning-combobox label="Profile"></lightning-combobox>
+                        <lightning-combobox name="main" label="Profile" options={profiles} value={mainProfile}
+                            onchange={handleProfileChange}></lightning-combobox>
                     </div>
                     <div class="slds-col">
-                        <lightning-combobox label="Compare with"></lightning-combobox>
+                        <lightning-combobox name="compare" label="Compare with" options={profiles}
+                            value={compareProfile} onchange={handleProfileChange}
+                            disabled={isMainNull}></lightning-combobox>
                     </div>
                 </div>
             </div>
         </div>
         <div class="table-container">
-            <template lwc:if={areOptionsSelected}>
+            <template lwc:if={mainProfile}>
                 <div class="slds-grid slds-grid_align-space">
                     <div class="slds-col">
-                        <lightning-datatable key-field="field" data={mainProfileData} columns={columns}
-                            hide-checkbox-column></lightning-datatable>
+                        <c-permissions-table permissions={mainProfilePermissions}
+                            is-field-view={isFieldView}></c-permissions-table>
                     </div>
                     <template lwc:if={compareProfile}>
                         <div class="slds-col">
-                            <lightning-datatable key-field="field" data={compareProfileData} columns={columns}
-                                hide-checkbox-column></lightning-datatable>
+                            <c-permissions-table permissions={compareProfilePermissions}
+                                is-field-view={isFieldView}></c-permissions-table>
                         </div>
                     </template>
                 </div>
