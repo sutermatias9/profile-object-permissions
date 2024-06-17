@@ -1,13 +1,15 @@
 import { LightningElement, wire } from 'lwc';
-import cellColors from '@salesforce/resourceUrl/cellColors';
 
-import getProfiles from '@salesforce/apex/ProfileHandler.getProfiles';
 import getSObjects from '@salesforce/apex/SObjectHandler.getSObjects';
+import getProfiles from '@salesforce/apex/ProfileHandler.getProfiles';
+import getObjectPermissions from '@salesforce/apex/ProfileHandler.getObjectPermissions';
+import getFieldPermissions from '@salesforce/apex/ProfileHandler.getFieldPermissions';
 
 export default class Permissions extends LightningElement {
     profiles;
-    sObjects;
-    tableColors = cellColors;
+    sobjects;
+    mainPermissions;
+    comparePermissions;
 
     @wire(getProfiles)
     wiredProfiles({ data, error }) {
@@ -26,13 +28,43 @@ export default class Permissions extends LightningElement {
             const sObjects = data;
             const apiNames = Object.keys(sObjects);
 
-            apiNames.sort(); // ? ver
+            apiNames.sort();
 
-            this.sObjects = apiNames.map((apiName) => {
+            this.sobjects = apiNames.map((apiName) => {
                 return { label: sObjects[apiName], value: apiName };
             });
         } else if (error) {
             console.error(error);
+        }
+    }
+
+    async handleProfileSelect(event) {
+        const { isFieldView, sobject, profile, type } = event.detail;
+
+        if (type === 'main') {
+            this.mainPermissions = await this.getProfilePermissions(profile, isFieldView, sobject);
+        } else {
+            this.comparePermissions = await this.getProfilePermissions(profile, isFieldView, sobject);
+        }
+
+        console.log(JSON.stringify(this.mainPermissions));
+        console.log(JSON.stringify(this.comparePermissions));
+    }
+
+    async getProfilePermissions(profileId, isFieldView, sObjectName) {
+        try {
+            let result;
+
+            if (isFieldView) {
+                result = await getFieldPermissions({ sObjectName, profileId });
+            } else {
+                result = await getObjectPermissions({ profileId });
+            }
+
+            return result;
+        } catch (e) {
+            console.error('error', e);
+            throw e;
         }
     }
 }

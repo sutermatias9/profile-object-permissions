@@ -1,46 +1,14 @@
 <!-- sldsValidatorIgnore -->
 <template>
     <lightning-card>
-        <div class="slds-grid slds-var-p-around_medium">
-            <div class="slds-col slds-size_1-of-4">
-                <lightning-combobox label="View" class="view-cbx" value={viewSelected} options={viewOptions}
-                    onchange={handleViewChange}></lightning-combobox>
-            </div>
-            <div class="slds-col slds-size_2-of-4">
-                <div class="slds-grid slds-gutters">
-                    <template lwc:if={isFieldView}>
-                        <div class="slds-col">
-                            <lightning-combobox label="Object" options={sObjects}
-                                onchange={handleObjectChange}></lightning-combobox>
-                        </div>
-                    </template>
-                    <div class="slds-col">
-                        <lightning-combobox name="main" label="Profile" options={profiles} value={mainProfile}
-                            onchange={handleProfileChange}></lightning-combobox>
-                    </div>
-                    <div class="slds-col">
-                        <lightning-combobox name="compare" label="Compare with" options={profiles}
-                            value={compareProfile} onchange={handleProfileChange}
-                            disabled={isMainNull}></lightning-combobox>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="table-container">
-            <template lwc:if={mainProfile}>
-                <div class="slds-grid slds-grid_align-space">
-                    <div class="slds-col">
-                        <c-permissions-table permissions={mainProfilePermissions}
-                            is-field-view={isFieldView}></c-permissions-table>
-                    </div>
-                    <template lwc:if={compareProfile}>
-                        <div class="slds-col">
-                            <c-permissions-table permissions={compareProfilePermissions}
-                                is-field-view={isFieldView}></c-permissions-table>
-                        </div>
-                    </template>
-                </div>
-            </template>
-        </div>
+        <lightning-tabset>
+            <lightning-tab label="View Permissions">
+                <c-permissions-viewer profiles={profiles} sobjects={sobjects} main-permissions={mainPermissions}
+                    compare-permissions={comparePermissions}
+                    onprofileselect={handleProfileSelect}></c-permissions-viewer>
+            </lightning-tab>
+            <lightning-tab label="Edit Permissions">
+            </lightning-tab>
+        </lightning-tabset>
     </lightning-card>
 </template>
