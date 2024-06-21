@@ -1,0 +1,26 @@
+<template>
+    <div class="slds-var-p-horizontal_medium">
+        <lightning-button label="permi" onclick={permi}></lightning-button>
+        <div class="header">
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col">
+                    <lightning-combobox label="Object" options={sobjects}
+                        onchange={handleObjectChange}></lightning-combobox>
+                </div>
+                <div class="slds-col">
+                    <lightning-combobox label="Profile" options={profiles}
+                        onchange={handleProfileChange}></lightning-combobox>
+                </div>
+                <div class="slds-col">
+                    <lightning-button label="Get permissions" variant="brand"
+                        onclick={handleGetPermissionsClick}></lightning-button>
+                </div>
+            </div>
+        </div>
+        <h2 class="slds-text-heading_medium slds-var-m-top_medium">Object Permissions</h2>
+        <h2 class="slds-text-heading_medium">Field Permissions</h2>
+    </div>
+</template>
+
+<!--PEDIR QUE ELIJA UN PROFILE Y UN OBJETO. VER permisos object and field ahi mismo
+HAcerlo con save button-->
