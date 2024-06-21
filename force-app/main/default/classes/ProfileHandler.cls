@@ -15,7 +15,50 @@ public with sharing class ProfileHandler {
     }
 
     @AuraEnabled
-    public static Map<String, Map<String, Boolean>> getObjectPermissions(Id profileId) {
+    public static Map<String, Boolean> getObjectPermissions(String sobjectName, Id profileId) {
+        try {
+            //lo puedo hacer dinamico
+            List<ObjectPermissions> ops = [
+                SELECT
+                    SobjectType,
+                    PermissionsRead,
+                    PermissionsCreate,
+                    PermissionsEdit,
+                    PermissionsDelete,
+                    PermissionsViewAllRecords,
+                    PermissionsModifyAllRecords
+                FROM ObjectPermissions
+                WHERE SobjectType = :sobjectName AND Parent.isOwnedByProfile = TRUE AND Parent.ProfileId = :profileId
+                LIMIT 1
+            ];
+
+            Map<String, Boolean> permissions = new Map<String, Boolean>{
+                'Read' => false,
+                'Create' => false,
+                'Edit' => false,
+                'Delete' => false,
+                'ViewAll' => false,
+                'ModifyAll' => false
+            };
+
+            if (!ops.isEmpty()) {
+                ObjectPermissions op = ops[0];
+                permissions.put('Read', op.PermissionsRead);
+                permissions.put('Create', op.PermissionsCreate);
+                permissions.put('Edit', op.PermissionsEdit);
+                permissions.put('Delete', op.PermissionsDelete);
+                permissions.put('ViewAll', op.PermissionsViewAllRecords);
+                permissions.put('ModifyAll', op.PermissionsModifyAllRecords);
+            }
+
+            return permissions;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error fetching object permissions: ' + e.getMessage());
+        }
+    }
+
+    @AuraEnabled
+    public static Map<String, Map<String, Boolean>> getAllObjectPermissions(Id profileId) {
         Map<String, Map<String, Boolean>> profileObjectPermissions = new Map<String, Map<String, Boolean>>();
         try {
             List<ObjectPermissions> ops = [
