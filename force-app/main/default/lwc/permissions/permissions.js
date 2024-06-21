@@ -2,7 +2,7 @@ import { LightningElement, wire } from 'lwc';
 
 import getSObjects from '@salesforce/apex/SObjectHandler.getSObjects';
 import getProfiles from '@salesforce/apex/ProfileHandler.getProfiles';
-import getObjectPermissions from '@salesforce/apex/ProfileHandler.getObjectPermissions';
+import getAllObjectPermissions from '@salesforce/apex/ProfileHandler.getAllObjectPermissions';
 import getFieldPermissions from '@salesforce/apex/ProfileHandler.getFieldPermissions';
 
 export default class Permissions extends LightningElement {
@@ -58,7 +58,7 @@ export default class Permissions extends LightningElement {
             if (isFieldView) {
                 result = await getFieldPermissions({ sObjectName, profileId });
             } else {
-                result = await getObjectPermissions({ profileId });
+                result = await getAllObjectPermissions({ profileId });
             }
 
             return result;
