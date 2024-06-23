@@ -4,40 +4,28 @@ export default class ObjectPermissionsToggles extends LightningElement {
     @api permissions;
 
     handlePermissionChange(event) {
-        const toggle = event.currentTarget;
-        const permission = toggle.label;
-        const checked = toggle.checked;
+        const { label: permission, checked } = event.currentTarget;
 
-        if (permission === 'Read' && !checked) {
-            this.uncheckAll();
-        } else if (permission === 'Create' && checked) {
+        if (checked) {
             this.check('Read');
-        } else if (permission === 'Edit') {
-            if (checked) {
-                this.check('Read');
-            } else {
-                this.uncheck('Delete');
-                this.uncheck('ModifyAll');
-            }
-        } else if (permission === 'Delete') {
-            if (checked) {
-                this.check('Read');
+
+            if (permission === 'Delete' || permission === 'ModifyAll') {
                 this.check('Edit');
-            } else {
-                this.uncheck('ModifyAll');
+
+                if (permission === 'ModifyAll') {
+                    this.check('Delete');
+                    this.check('ViewAll');
+                }
             }
-        } else if (permission === 'ViewAll') {
-            if (checked) {
-                this.check('Read');
-            } else {
+        } else {
+            if (permission !== 'Create') {
                 this.uncheck('ModifyAll');
-            }
-        } else if (permission === 'ModifyAll') {
-            if (checked) {
-                this.check('Read');
-                this.check('Edit');
-                this.check('Delete');
-                this.check('ViewAll');
+
+                if (permission === 'Edit') {
+                    this.uncheck('Delete');
+                } else if (permission === 'Read') {
+                    this.uncheckAll();
+                }
             }
         }
     }
