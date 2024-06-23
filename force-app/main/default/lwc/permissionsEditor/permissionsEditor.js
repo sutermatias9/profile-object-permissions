@@ -1,11 +1,15 @@
 import { LightningElement, api } from 'lwc';
 import getObjectPermissions from '@salesforce/apex/ProfileHandler.getObjectPermissions';
+import getFieldPermissions from '@salesforce/apex/ProfileHandler.getFieldPermissions';
 
 export default class PermissionsEditor extends LightningElement {
     @api profiles;
     @api sobjects;
     profileSelected;
     sobjectSelected;
+
+    objectPermissions;
+    fieldPermissions;
 
     handleObjectChange(event) {
         this.sobjectSelected = event.detail.value;
@@ -17,11 +21,22 @@ export default class PermissionsEditor extends LightningElement {
 
     async handleGetPermissionsClick() {
         if (this.sobjectSelected && this.profileSelected) {
-            const objectPermissions = await getObjectPermissions({
-                sobjectName: this.sobjectSelected,
-                profileId: this.profileSelected
+            const options = { sobjectName: this.sobjectSelected, profileId: this.profileSelected };
+
+            const [objPermissions, fldPermissions] = await Promise.all([
+                getObjectPermissions(options),
+                getFieldPermissions(options)
+            ]);
+
+            this.objectPermissions = Object.entries(objPermissions).map(([name, value]) => {
+                return { name, value };
             });
-            console.log(objectPermissions);
+
+            this.fieldPermissions = Object.entries(fldPermissions).map(([fieldName, permissions]) => {
+                return { name: fieldName, permissions };
+            });
+
+            console.log(JSON.stringify(this.fieldPermissions));
         }
     }
 }
