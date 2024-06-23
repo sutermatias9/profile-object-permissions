@@ -1,0 +1,10 @@
+<template>
+    <div class="slds-grid slds-var-m-bottom_large">
+        <template for:each={permissions} for:item="permission">
+            <div class="slds-col" key={permission.name}>
+                <lightning-input type="toggle" label={permission.name} data-label={permission.name}
+                    checked={permission.value} onchange={handlePermissionChange}></lightning-input>
+            </div>
+        </template>
+    </div>
+</template>
