@@ -17,43 +17,19 @@
             </div>
         </div>
         <hr>
+
         <h2 class="slds-text-heading_medium slds-var-m-vertical_medium">Object Permissions</h2>
         <template lwc:if={objectPermissions}>
-            <div class="slds-grid slds-var-m-bottom_large">
-                <template for:each={objectPermissions} for:item="permission">
-                    <div class="slds-col" key={permission.name}>
-                        <lightning-input type="toggle" label={permission.name} checked={permission.value}
-                            onchange={handleObjectPermissionChange}></lightning-input>
-                    </div>
-                </template>
-            </div>
+            <c-object-permissions-toggles permissions={objectPermissions}></c-object-permissions-toggles>
         </template>
+
         <h2 class="slds-text-heading_medium slds-var-m-bottom_medium">Field Permissions</h2>
         <div class="slds-grid slds-var-p-left_medium">
             <div class="slds-col slds-size_10-of-12">
                 <template lwc:if={fieldPermissions}>
-                    <div class="slds-grid slds-wrap">
-                        <template for:each={fieldPermissions} for:item="field">
-                            <div class="slds-col slds-size_6-of-12 slds-var-m-bottom_small" key={field.name}>
-                                <div class="slds-grid">
-                                    <div class="slds-col slds-size_1-of-3">{field.name}:</div>
-                                    <div class="slds-col slds-size_1-of-3">
-                                        <lightning-input type="toggle" label="Read"
-                                            checked={field.permissions.Readable}></lightning-input>
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-3">
-                                        <lightning-input type="toggle" label="Edit"
-                                            checked={field.permissions.Editable}></lightning-input>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
+                    <c-field-permissions-toggles permissions={fieldPermissions}></c-field-permissions-toggles>
                 </template>
             </div>
         </div>
     </div>
 </template>
-
-<!--PEDIR QUE ELIJA UN PROFILE Y UN OBJETO. VER permisos object and field ahi mismo
-HAcerlo con save button-->
