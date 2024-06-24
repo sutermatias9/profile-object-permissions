@@ -1,6 +1,6 @@
 import { LightningElement, api } from 'lwc';
-import getObjectPermissions from '@salesforce/apex/ProfileHandler.getObjectPermissions';
-import getFieldPermissions from '@salesforce/apex/ProfileHandler.getFieldPermissions';
+import getObjectPermissions from '@salesforce/apex/ObjectPermissionsHandler.getObjectPermissions';
+import getFieldPermissions from '@salesforce/apex/FieldPermissionsHandler.getFieldPermissions';
 
 export default class PermissionsEditor extends LightningElement {
     @api profiles;
@@ -35,8 +35,6 @@ export default class PermissionsEditor extends LightningElement {
             this.fieldPermissions = Object.entries(fldPermissions).map(([fieldName, permissions]) => {
                 return { name: fieldName, permissions };
             });
-
-            console.log(JSON.stringify(this.fieldPermissions));
         }
     }
 }

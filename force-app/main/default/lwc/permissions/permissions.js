@@ -2,8 +2,8 @@ import { LightningElement, wire } from 'lwc';
 
 import getSObjects from '@salesforce/apex/SObjectHandler.getSObjects';
 import getProfiles from '@salesforce/apex/ProfileHandler.getProfiles';
-import getAllObjectPermissions from '@salesforce/apex/ProfileHandler.getAllObjectPermissions';
-import getFieldPermissions from '@salesforce/apex/ProfileHandler.getFieldPermissions';
+import getAllObjectPermissions from '@salesforce/apex/ObjectPermissionsHandler.getAllObjectPermissions';
+import getFieldPermissions from '@salesforce/apex/FieldPermissionsHandler.getFieldPermissions';
 
 export default class Permissions extends LightningElement {
     profiles;

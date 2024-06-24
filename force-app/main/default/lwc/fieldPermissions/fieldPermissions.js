@@ -1,6 +1,6 @@
 import { LightningElement, api } from 'lwc';
 import { loadStyle } from 'lightning/platformResourceLoader';
-import getFieldPermissions from '@salesforce/apex/ProfileHandler.getFieldPermissions';
+import getFieldPermissions from '@salesforce/apex/FieldPermissionsHandler.getFieldPermissions';
 
 const COLUMNS = [
     {
@@ -111,7 +111,7 @@ export default class ObjectPermissionsAndData extends LightningElement {
     async getProfilePermissions(profileId) {
         try {
             const result = await getFieldPermissions({
-                sObjectName: this.sObjectSelected,
+                sobjectName: this.sObjectSelected,
                 profileId
             });
 
