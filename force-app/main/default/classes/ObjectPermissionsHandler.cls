@@ -1,21 +1,29 @@
 public with sharing class ObjectPermissionsHandler {
     @AuraEnabled
+    public static void setPermissions(String sobjectName, Id profileId, String permissionsJSON) {
+        try {
+            Map<String, Boolean> permissions = (Map<String, Boolean>) JSON.deserialize(
+                permissionsJSON,
+                Map<String, Boolean>.class
+            );
+
+            List<ObjectPermissions> ops = getExistingObjectPermissions(profileId, sobjectName);
+
+            if (ops.isEmpty()) {
+                createRecord(permissionSetId, sobjectName, permissions);
+            } else {
+                ObjectPermissions op = ops[0];
+                updateRecord(op, permissions);
+            }
+        } catch (Exception e) {
+            throw new AuraHandledException('Error setting permissions: ' + e.getMessage());
+        }
+    }
+
+    @AuraEnabled
     public static Map<String, Boolean> getObjectPermissions(String sobjectName, Id profileId) {
         try {
-            //lo puedo hacer dinamico
-            List<ObjectPermissions> ops = [
-                SELECT
-                    SobjectType,
-                    PermissionsRead,
-                    PermissionsCreate,
-                    PermissionsEdit,
-                    PermissionsDelete,
-                    PermissionsViewAllRecords,
-                    PermissionsModifyAllRecords
-                FROM ObjectPermissions
-                WHERE SobjectType = :sobjectName AND Parent.isOwnedByProfile = TRUE AND Parent.ProfileId = :profileId
-                LIMIT 1
-            ];
+            List<ObjectPermissions> ops = getExistingObjectPermissions(profileId, sobjectName);
 
             Map<String, Boolean> permissions = new Map<String, Boolean>{
                 'Read' => false,
@@ -80,6 +88,55 @@ public with sharing class ObjectPermissionsHandler {
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
+    }
+
+    private static void createRecord(Id permissionSetId, String sobjectName, Map<String, Boolean> permissions) {
+        ObjectPermissions op = new ObjectPermissions();
+        op.ParentId = permissionSetId;
+        op.SobjectType = sobjectName;
+        op.PermissionsRead = permissions.get('Read');
+        op.PermissionsCreate = permissions.get('Create');
+        op.PermissionsEdit = permissions.get('Edit');
+        op.PermissionsDelete = permissions.get('Delete');
+        op.PermissionsViewAllRecords = permissions.get('ViewAll');
+        op.PermissionsModifyAllRecords = permissions.get('ModifyAll');
+        insert op;
+    }
+
+    private static void updateRecord(ObjectPermissions op, Map<String, Boolean> permissions) {
+        op.PermissionsRead = permissions.get('Read');
+        op.PermissionsCreate = permissions.get('Create');
+        op.PermissionsEdit = permissions.get('Edit');
+        op.PermissionsDelete = permissions.get('Delete');
+        op.PermissionsViewAllRecords = permissions.get('ViewAll');
+        op.PermissionsModifyAllRecords = permissions.get('ModifyAll');
+
+        update op;
+    }
+
+    private static PermissionSet getPermissionSet(Id profileId) {
+        return [
+            SELECT Id
+            FROM PermissionSet
+            WHERE isOwnedByProfile = TRUE AND ProfileId = :profileId
+        ];
+    }
+
+    private static List<ObjectPermissions> getExistingObjectPermissions(Id profileId, String sobjectName) {
+        Id permissionSetId = getPermissionSet(profileId).Id;
+
+        return [
+            SELECT
+                SobjectType,
+                PermissionsRead,
+                PermissionsCreate,
+                PermissionsEdit,
+                PermissionsDelete,
+                PermissionsViewAllRecords,
+                PermissionsModifyAllRecords
+            FROM ObjectPermissions
+            WHERE ParentId = :permissionSetId AND SobjectType = :sobjectName
+        ];
     }
 
     private static Boolean areMissingObjects(Set<String> objectsAdded) {
