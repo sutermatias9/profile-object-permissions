@@ -1,15 +1,13 @@
 <!-- sldsValidatorIgnore -->
+
 <template>
     <lightning-card>
         <lightning-tabset>
             <lightning-tab label="View permissions">
-                <c-permissions-viewer profiles={profiles} sobjects={sobjects} main-permissions={mainPermissions}
-                    compare-permissions={comparePermissions}
-                    onprofileselect={handleProfileSelect}></c-permissions-viewer>
+                <c-permissions-viewer profiles={profiles} sobjects={sobjects}></c-permissions-viewer>
             </lightning-tab>
             <lightning-tab label="Edit permissions">
-                <c-permissions-editor profiles={profiles} sobjects={sobjects}
-                    ongetpermissions={handleGetPermissions}></c-permissions-editor>
+                <c-permissions-editor profiles={profiles} sobjects={sobjects}></c-permissions-editor>
             </lightning-tab>
         </lightning-tabset>
     </lightning-card>

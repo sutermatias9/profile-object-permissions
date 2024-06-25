@@ -1,5 +1,5 @@
 <template>
-    <div class="slds-grid slds-var-p-around_medium">
+    <div class="slds-grid slds-grid_vertical-align-end slds-var-p-around_medium">
         <div class="slds-col slds-size_1-of-4">
             <lightning-combobox label="View" class="view-cbx" value={viewSelected} options={viewOptions}
                 onchange={handleViewChange}></lightning-combobox>
@@ -19,6 +19,9 @@
                 <div class="slds-col">
                     <lightning-combobox name="compare" label="Compare with" options={profiles} value={compareProfile}
                         onchange={handleProfileChange} disabled={isMainNull}></lightning-combobox>
+                </div>
+                <div class="slds-col">
+                    <lightning-button label="Get Permissions" onclick={handleGetPermissionsClick}></lightning-button>
                 </div>
             </div>
         </div>
