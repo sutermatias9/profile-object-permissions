@@ -4,13 +4,17 @@
             <div class="slds-col slds-size_6-of-12 slds-var-m-bottom_small" key={field.name}>
                 <div class="slds-grid">
                     <div class="slds-col slds-size_1-of-3">{field.name}:</div>
-                    <div class="slds-col slds-size_1-of-3">
-                        <lightning-input type="toggle" label="Read" data-field={field.name}
-                            checked={field.permissions.Readable} onchange={handlePermissionChange}></lightning-input>
-                    </div>
-                    <div class="slds-col slds-size_1-of-3">
-                        <lightning-input type="toggle" label="Edit" data-field={field.name}
-                            checked={field.permissions.Editable} onchange={handlePermissionChange}></lightning-input>
+                    <div class="toggles-container">
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input type="toggle" label="Read" data-field={field.name}
+                                checked={field.permissions.Readable}
+                                onchange={handlePermissionChange}></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input type="toggle" label="Edit" data-field={field.name}
+                                checked={field.permissions.Editable}
+                                onchange={handlePermissionChange}></lightning-input>
+                        </div>
                     </div>
                 </div>
             </div>
