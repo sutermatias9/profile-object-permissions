@@ -3,6 +3,16 @@ import { LightningElement, api } from 'lwc';
 export default class ObjectPermissionsToggles extends LightningElement {
     @api permissions;
 
+    @api getPermissions() {
+        const togglesInfo = {};
+
+        this.template.querySelectorAll('lightning-input').forEach((input) => {
+            togglesInfo[input.label] = input.checked;
+        });
+
+        return togglesInfo;
+    }
+
     handlePermissionChange(event) {
         const { label: permission, checked } = event.currentTarget;
 
