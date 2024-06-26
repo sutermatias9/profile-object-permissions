@@ -1,12 +1,12 @@
 <template>
     <div class="slds-var-p-horizontal_medium">
         <div class="header">
-            <div class="slds-grid slds-gutters">
-                <div class="slds-col">
+            <div class="slds-grid slds-gutters slds-grid_vertical-align-end">
+                <div class="slds-col slds-size_1-of-3">
                     <lightning-combobox label="Object" options={sobjects}
                         onchange={handleObjectChange}></lightning-combobox>
                 </div>
-                <div class="slds-col">
+                <div class="slds-col slds-size_1-of-3">
                     <lightning-combobox label="Profile" options={profiles}
                         onchange={handleProfileChange}></lightning-combobox>
                 </div>
@@ -14,21 +14,27 @@
                     <lightning-button label="Get permissions" variant="brand"
                         onclick={handleGetPermissionsClick}></lightning-button>
                 </div>
+                <template lwc:if={areTogglesDisplayed}>
+                    <div class="slds-col">
+                        <lightning-button label="Save changes" onclick={handleSaveClick}></lightning-button>
+                    </div>
+                </template>
             </div>
         </div>
         <hr>
 
-        <lightning-button label="Save changes" onclick={handleSaveClick}></lightning-button>
         <h2 class="slds-text-heading_medium slds-var-m-vertical_medium">Object Permissions</h2>
         <template lwc:if={objectPermissions}>
-            <c-object-permissions-toggles permissions={objectPermissions}></c-object-permissions-toggles>
+            <c-object-permissions-toggles permissions={objectPermissions}
+                disabled={isSaved}></c-object-permissions-toggles>
         </template>
 
         <h2 class="slds-text-heading_medium slds-var-m-bottom_medium">Field Permissions</h2>
         <div class="slds-grid slds-var-p-left_medium">
             <div class="slds-col slds-size_10-of-12">
                 <template lwc:if={fieldPermissions}>
-                    <c-field-permissions-toggles permissions={fieldPermissions}></c-field-permissions-toggles>
+                    <c-field-permissions-toggles permissions={fieldPermissions}
+                        disabled={isSaved}></c-field-permissions-toggles>
                 </template>
             </div>
         </div>

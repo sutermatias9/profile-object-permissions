@@ -2,6 +2,7 @@ import { LightningElement, api } from 'lwc';
 
 export default class ObjectPermissionsToggles extends LightningElement {
     @api permissions;
+    @api disabled;
 
     @api getPermissions() {
         const togglesInfo = {};

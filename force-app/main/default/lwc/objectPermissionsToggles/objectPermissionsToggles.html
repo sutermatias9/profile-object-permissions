@@ -3,7 +3,7 @@
         <template for:each={permissions} for:item="permission">
             <div class="slds-col" key={permission.name}>
                 <lightning-input type="toggle" label={permission.name} data-label={permission.name}
-                    checked={permission.value} onchange={handlePermissionChange}></lightning-input>
+                    checked={permission.value} onchange={handlePermissionChange} disabled={disabled}></lightning-input>
             </div>
         </template>
     </div>

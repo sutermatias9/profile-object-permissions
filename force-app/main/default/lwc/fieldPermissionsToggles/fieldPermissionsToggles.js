@@ -2,6 +2,7 @@ import { LightningElement, api } from 'lwc';
 
 export default class FieldPermissionsToggles extends LightningElement {
     @api permissions;
+    @api disabled;
 
     @api getPermissions() {
         const containers = Array.from(this.template.querySelectorAll('.toggles-container'));
@@ -29,6 +30,10 @@ export default class FieldPermissionsToggles extends LightningElement {
     }
 
     getToggles(container) {
-        return container.querySelectorAll('lightning-input');
+        if (container) {
+            return container.querySelectorAll('lightning-input');
+        }
+
+        return this.template.querySelectorAll('lightning-input');
     }
 }

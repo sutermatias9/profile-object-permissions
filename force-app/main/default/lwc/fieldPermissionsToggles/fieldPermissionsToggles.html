@@ -7,13 +7,13 @@
                         <div class="slds-col slds-size_1-of-3">{field.name}:</div>
                         <div class="slds-col slds-size_1-of-3">
                             <lightning-input type="toggle" label="Read" data-field={field.name}
-                                checked={field.permissions.Readable}
-                                onchange={handlePermissionChange}></lightning-input>
+                                checked={field.permissions.Readable} onchange={handlePermissionChange}
+                                disabled={disabled}></lightning-input>
                         </div>
                         <div class="slds-col slds-size_1-of-3">
                             <lightning-input type="toggle" label="Edit" data-field={field.name}
-                                checked={field.permissions.Editable}
-                                onchange={handlePermissionChange}></lightning-input>
+                                checked={field.permissions.Editable} onchange={handlePermissionChange}
+                                disabled={disabled}></lightning-input>
                         </div>
                     </div>
                 </div>
