@@ -7,7 +7,9 @@ public with sharing class ObjectPermissionsHandler {
                 Map<String, Boolean>.class
             );
 
-            List<ObjectPermissions> ops = getExistingObjectPermissions(profileId, sobjectName);
+            Id permissionSetId = PermissionSetHandler.getPermissionSet(profileId).Id;
+
+            List<ObjectPermissions> ops = getExistingObjectPermissions(profileId, permissionSetId, sobjectName);
 
             if (ops.isEmpty()) {
                 createRecord(permissionSetId, sobjectName, permissions);
@@ -23,9 +25,11 @@ public with sharing class ObjectPermissionsHandler {
     @AuraEnabled
     public static Map<String, Boolean> getObjectPermissions(String sobjectName, Id profileId) {
         try {
-            List<ObjectPermissions> ops = getExistingObjectPermissions(profileId, sobjectName);
+            PermissionSet permissionSet = PermissionSetHandler.getPermissionSet(profileId);
+            List<ObjectPermissions> ops = getExistingObjectPermissions(profileId, permissionSet.Id, sobjectName);
 
             Map<String, Boolean> permissions = new Map<String, Boolean>{
+                'isCustom' => permissionSet.isCustom,
                 'Read' => false,
                 'Create' => false,
                 'Edit' => false,
@@ -100,6 +104,7 @@ public with sharing class ObjectPermissionsHandler {
         op.PermissionsDelete = permissions.get('Delete');
         op.PermissionsViewAllRecords = permissions.get('ViewAll');
         op.PermissionsModifyAllRecords = permissions.get('ModifyAll');
+
         insert op;
     }
 
@@ -114,17 +119,11 @@ public with sharing class ObjectPermissionsHandler {
         update op;
     }
 
-    private static PermissionSet getPermissionSet(Id profileId) {
-        return [
-            SELECT Id
-            FROM PermissionSet
-            WHERE isOwnedByProfile = TRUE AND ProfileId = :profileId
-        ];
-    }
-
-    private static List<ObjectPermissions> getExistingObjectPermissions(Id profileId, String sobjectName) {
-        Id permissionSetId = getPermissionSet(profileId).Id;
-
+    private static List<ObjectPermissions> getExistingObjectPermissions(
+        Id profileId,
+        Id PermissionSetId,
+        String sobjectName
+    ) {
         return [
             SELECT
                 SobjectType,

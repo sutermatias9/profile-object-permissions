@@ -27,12 +27,12 @@
         <h2 class="slds-text-heading_medium slds-var-m-vertical_medium">Object Permissions</h2>
         <template lwc:if={objectPermissions}>
             <c-object-permissions-toggles permissions={objectPermissions}
-                disabled={isSaved}></c-object-permissions-toggles>
+                disabled={areObjectTogglesOff}></c-object-permissions-toggles>
         </template>
 
         <h2 class="slds-text-heading_medium slds-var-m-bottom_medium">Field Permissions</h2>
         <div class="slds-grid slds-var-p-left_medium">
-            <div class="slds-col slds-size_10-of-12">
+            <div class="slds-col slds-size_10-of-12 slds-align_absolute-center">
                 <template lwc:if={fieldPermissions}>
                     <c-field-permissions-toggles permissions={fieldPermissions}
                         disabled={isSaved}></c-field-permissions-toggles>

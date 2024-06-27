@@ -12,9 +12,9 @@ public with sharing class FieldPermissionsHandler {
                 permissionsJSON,
                 List<TogglesInfoWrapper>.class
             );
-            List<FieldPermissions> recordsToUpsert = new List<FieldPermissions>();
-            Id permissionSetId = PermissionSetHandler.getPermissionSetId(profileId);
+            Id permissionSetId = PermissionSetHandler.getPermissionSet(profileId).Id;
             List<FieldPermissions> fps = getExistingPermissions(profileId, sobjectName, permissionSetId);
+            List<FieldPermissions> recordsToUpsert = new List<FieldPermissions>();
             List<String> fieldNames = getFieldNames(fps);
 
             for (TogglesInfoWrapper info : togglesInfo) {
@@ -46,7 +46,7 @@ public with sharing class FieldPermissionsHandler {
         Map<String, Map<String, Boolean>> profileFieldsPermissions = new Map<String, Map<String, Boolean>>();
 
         try {
-            Id permissionSetId = PermissionSetHandler.getPermissionSetId(profileId);
+            Id permissionSetId = PermissionSetHandler.getPermissionSet(profileId).Id;
             List<FieldPermissions> fps = getExistingPermissions(profileId, sobjectName, permissionSetId);
 
             for (FieldPermissions fp : fps) {

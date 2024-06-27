@@ -1,10 +1,9 @@
 public with sharing class PermissionSetHandler {
-    public static Id getPermissionSetId(Id profileId) {
+    public static PermissionSet getPermissionSet(Id profileId) {
         return [
-            SELECT Id
+            SELECT Id, isCustom
             FROM PermissionSet
             WHERE isOwnedByProfile = TRUE AND ProfileId = :profileId
-        ]
-        .Id;
+        ];
     }
 }

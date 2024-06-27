@@ -17,7 +17,12 @@ export default class PermissionsEditor extends LightningElement {
     objectPermissions;
     fieldPermissions;
 
+    isStandardProfile = false;
     isSaved = false;
+
+    get areObjectTogglesOff() {
+        return this.isSaved || this.isStandardProfile;
+    }
 
     handleObjectChange(event) {
         this.sobjectSelected = event.detail.value;
@@ -38,6 +43,9 @@ export default class PermissionsEditor extends LightningElement {
 
             this.isSaved = false;
             this.arePermissionsLoaded = true;
+            this.isStandardProfile = !objPermissions.isCustom;
+
+            delete objPermissions.isCustom;
 
             this.objectPermissions = Object.entries(objPermissions).map(([name, value]) => {
                 return { name, value };
@@ -48,7 +56,7 @@ export default class PermissionsEditor extends LightningElement {
             });
         }
     }
-    // ! VER CUANDO ES STANDARD PROFILE
+
     handleSaveClick() {
         const options = { profileId: this.profileSelected, sobjectName: this.sobjectSelected };
 
