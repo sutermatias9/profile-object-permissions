@@ -15,6 +15,8 @@ export default class PermissionsViewer extends LightningElement {
     mainProfile = null;
     compareProfile = null;
 
+    showTables = false;
+
     get viewOptions() {
         return [
             { label: 'Object Permissions', value: 'object' },
@@ -31,7 +33,11 @@ export default class PermissionsViewer extends LightningElement {
     }
 
     handleGetPermissionsClick() {
+        this.template.querySelector('.main-input').reportValidity();
+
         if (this.isFieldView) {
+            this.template.querySelector('.object-input').reportValidity();
+
             if (this.sObjectSelected && this.mainProfile) {
                 this.buildTable();
             }
@@ -62,6 +68,7 @@ export default class PermissionsViewer extends LightningElement {
         this.sObjectSelected = null;
         this.mainProfile = null;
         this.compareProfile = null;
+        this.showTables = false;
         this.viewSelected = event.detail.value;
     }
 
@@ -69,12 +76,10 @@ export default class PermissionsViewer extends LightningElement {
         this.mainPermissions = await this.getProfilePermissions(this.mainProfile, this.sObjectSelected);
 
         if (this.compareProfile) {
-            this.comparePermissions = await this.getProfilePermissions(this.mainProfile, this.sObjectSelected);
+            this.comparePermissions = await this.getProfilePermissions(this.compareProfile, this.sObjectSelected);
         }
 
-        console.log('BUILD TABLE ----');
-        console.log(JSON.stringify(this.mainPermissions));
-        console.log(JSON.stringify(this.comparePermissions));
+        this.showTables = true;
     }
 
     async getProfilePermissions(profileId, sobjectName) {

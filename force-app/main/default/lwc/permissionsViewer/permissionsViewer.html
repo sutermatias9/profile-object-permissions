@@ -1,20 +1,20 @@
 <template>
-    <div class="slds-grid slds-grid_vertical-align-end slds-var-p-around_medium">
+    <div class="slds-grid slds-grid_vertical-align-end slds-var-p-around_medium slds-grid_vertical-align-end">
         <div class="slds-col slds-size_1-of-4">
             <lightning-combobox label="View" class="view-cbx" value={viewSelected} options={viewOptions}
                 onchange={handleViewChange}></lightning-combobox>
         </div>
         <div class="slds-col slds-size_2-of-4">
-            <div class="slds-grid slds-gutters">
+            <div class="slds-grid slds-gutters slds-grid_vertical-align-end">
                 <template lwc:if={isFieldView}>
                     <div class="slds-col">
-                        <lightning-combobox label="Object" options={sobjects}
-                            onchange={handleObjectChange}></lightning-combobox>
+                        <lightning-combobox label="Object" class="object-input" options={sobjects}
+                            onchange={handleObjectChange} required></lightning-combobox>
                     </div>
                 </template>
                 <div class="slds-col">
                     <lightning-combobox name="main" label="Profile" options={profiles} value={mainProfile}
-                        onchange={handleProfileChange}></lightning-combobox>
+                        class="main-input" onchange={handleProfileChange} required></lightning-combobox>
                 </div>
                 <div class="slds-col">
                     <lightning-combobox name="compare" label="Compare with" options={profiles} value={compareProfile}
@@ -26,14 +26,15 @@
             </div>
         </div>
     </div>
-    <div class="table-container">
-        <template lwc:if={mainProfile}>
+    <hr>
+    <div class="table-container slds-var-m-top_large">
+        <template lwc:if={showTables}>
             <div class="slds-grid slds-grid_align-space">
                 <div class="slds-col">
                     <c-permissions-table permissions={mainPermissions}
                         is-field-view={isFieldView}></c-permissions-table>
                 </div>
-                <template lwc:if={compareProfile}>
+                <template lwc:if={comparePermissions}>
                     <div class="slds-col">
                         <c-permissions-table permissions={comparePermissions}
                             is-field-view={isFieldView}></c-permissions-table>
