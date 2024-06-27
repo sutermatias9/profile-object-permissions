@@ -1,16 +1,16 @@
 <template>
-    <div class="slds-grid slds-wrap">
+    <div class="slds-grid slds-wrap slds-gutters_large slds-grid_align-space">
         <template for:each={permissions} for:item="field">
-            <div class="slds-col slds-size_6-of-12 slds-var-m-bottom_small" key={field.name}>
+            <div class="slds-col slds-size_5-of-12 slds-border_bottom slds-var-m-bottom_small " key={field.name}>
                 <div class="toggles-container">
                     <div class="slds-grid">
-                        <div class="slds-col slds-size_1-of-3">{field.name}:</div>
-                        <div class="slds-col slds-size_1-of-3">
+                        <div class="slds-col slds-size_3-of-6">{field.name}:</div>
+                        <div class="slds-col">
                             <lightning-input type="toggle" label="Read" data-field={field.name}
                                 checked={field.permissions.Readable} onchange={handlePermissionChange}
                                 disabled={disabled}></lightning-input>
                         </div>
-                        <div class="slds-col slds-size_1-of-3">
+                        <div class="slds-col">
                             <lightning-input type="toggle" label="Edit" data-field={field.name}
                                 checked={field.permissions.Editable} onchange={handlePermissionChange}
                                 disabled={disabled}></lightning-input>

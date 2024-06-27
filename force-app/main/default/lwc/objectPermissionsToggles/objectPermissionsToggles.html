@@ -1,7 +1,7 @@
 <template>
-    <div class="slds-grid slds-var-m-bottom_large">
+    <div class="slds-grid slds-var-m-bottom_large slds-align_absolute-center">
         <template for:each={permissions} for:item="permission">
-            <div class="slds-col" key={permission.name}>
+            <div class="slds-col slds-size_1-of-8" key={permission.name}>
                 <lightning-input type="toggle" label={permission.name} data-label={permission.name}
                     checked={permission.value} onchange={handlePermissionChange} disabled={disabled}></lightning-input>
             </div>
