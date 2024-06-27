@@ -33,6 +33,8 @@ export default class PermissionsEditor extends LightningElement {
     }
 
     async handleGetPermissionsClick() {
+        this.reportValidity();
+
         if (this.sobjectSelected && this.profileSelected) {
             const options = { sobjectName: this.sobjectSelected, profileId: this.profileSelected };
 
@@ -78,6 +80,10 @@ export default class PermissionsEditor extends LightningElement {
 
     getTogglesValues(type) {
         return this.template.querySelector(`c-${type}-permissions-toggles`).getPermissions();
+    }
+
+    reportValidity() {
+        this.template.querySelectorAll('lightning-combobox').forEach((input) => input.reportValidity());
     }
 
     showNotification(title, message, variant = 'success') {

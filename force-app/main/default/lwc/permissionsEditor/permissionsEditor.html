@@ -3,12 +3,12 @@
         <div class="header">
             <div class="slds-grid slds-gutters slds-grid_vertical-align-end">
                 <div class="slds-col slds-size_1-of-3">
-                    <lightning-combobox label="Object" options={sobjects}
-                        onchange={handleObjectChange}></lightning-combobox>
+                    <lightning-combobox label="Object" options={sobjects} onchange={handleObjectChange}
+                        required></lightning-combobox>
                 </div>
                 <div class="slds-col slds-size_1-of-3">
-                    <lightning-combobox label="Profile" options={profiles}
-                        onchange={handleProfileChange}></lightning-combobox>
+                    <lightning-combobox label="Profile" options={profiles} onchange={handleProfileChange}
+                        required></lightning-combobox>
                 </div>
                 <div class="slds-col">
                     <lightning-button label="Get permissions" variant="brand"
