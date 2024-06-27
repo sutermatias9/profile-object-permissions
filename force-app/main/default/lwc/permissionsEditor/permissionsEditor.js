@@ -12,7 +12,7 @@ export default class PermissionsEditor extends LightningElement {
     @api sobjects;
     profileSelected;
     sobjectSelected;
-    areTogglesDisplayed = false;
+    arePermissionsLoaded = false;
 
     objectPermissions;
     fieldPermissions;
@@ -28,8 +28,6 @@ export default class PermissionsEditor extends LightningElement {
     }
 
     async handleGetPermissionsClick() {
-        this.areTogglesDisplayed = true;
-
         if (this.sobjectSelected && this.profileSelected) {
             const options = { sobjectName: this.sobjectSelected, profileId: this.profileSelected };
 
@@ -39,6 +37,7 @@ export default class PermissionsEditor extends LightningElement {
             ]);
 
             this.isSaved = false;
+            this.arePermissionsLoaded = true;
 
             this.objectPermissions = Object.entries(objPermissions).map(([name, value]) => {
                 return { name, value };

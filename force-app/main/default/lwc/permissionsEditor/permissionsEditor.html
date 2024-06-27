@@ -14,9 +14,10 @@
                     <lightning-button label="Get permissions" variant="brand"
                         onclick={handleGetPermissionsClick}></lightning-button>
                 </div>
-                <template lwc:if={areTogglesDisplayed}>
+                <template lwc:if={arePermissionsLoaded}>
                     <div class="slds-col">
-                        <lightning-button label="Save changes" onclick={handleSaveClick}></lightning-button>
+                        <lightning-button label="Save changes" onclick={handleSaveClick}
+                            disabled={isSaved}></lightning-button>
                     </div>
                 </template>
             </div>
