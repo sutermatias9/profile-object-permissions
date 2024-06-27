@@ -20,7 +20,6 @@ public with sharing class FieldPermissionsHandler {
             for (TogglesInfoWrapper info : togglesInfo) {
                 info.field = sobjectName + '.' + info.field;
                 FieldPermissions record;
-                System.debug(info);
 
                 if (fieldNames.contains(info.field)) {
                     record = findRecord(info.field, fps);
@@ -62,7 +61,7 @@ public with sharing class FieldPermissionsHandler {
                 profileFieldsPermissions.putAll(getMissingFields(sobjectName, fieldsAdded));
             }
 
-            return sortMap(profileFieldsPermissions);
+            return Utils.sortMapByKeys(profileFieldsPermissions);
         } catch (Exception e) {
             throw new AuraHandledException('Error fetching field permissions: ' + e.getMessage());
         }
@@ -132,18 +131,5 @@ public with sharing class FieldPermissionsHandler {
         record.PermissionsEdit = info.edit;
 
         return record;
-    }
-
-    private static Map<String, Map<String, Boolean>> sortMap(Map<String, Map<String, Boolean>> unorderedMap) {
-        Map<String, Map<String, Boolean>> orderedMap = new Map<String, Map<String, Boolean>>();
-
-        Map<String, Object> input = (Map<String, Object>) unorderedMap;
-        Map<String, Object> sorted = Utils.sortMapByKeys(input);
-
-        for (String key : sorted.keySet()) {
-            orderedMap.put(key, (Map<String, Boolean>) sorted.get(key));
-        }
-
-        return orderedMap;
     }
 }

@@ -9,7 +9,7 @@ public with sharing class ObjectPermissionsHandler {
 
             Id permissionSetId = PermissionSetHandler.getPermissionSet(profileId).Id;
 
-            List<ObjectPermissions> ops = getExistingObjectPermissions(profileId, permissionSetId, sobjectName);
+            List<ObjectPermissions> ops = getExistingPermissions(permissionSetId, sobjectName);
 
             if (ops.isEmpty()) {
                 createRecord(permissionSetId, sobjectName, permissions);
@@ -26,7 +26,7 @@ public with sharing class ObjectPermissionsHandler {
     public static Map<String, Boolean> getObjectPermissions(String sobjectName, Id profileId) {
         try {
             PermissionSet permissionSet = PermissionSetHandler.getPermissionSet(profileId);
-            List<ObjectPermissions> ops = getExistingObjectPermissions(profileId, permissionSet.Id, sobjectName);
+            List<ObjectPermissions> ops = getExistingPermissions(permissionSet.Id, sobjectName);
 
             Map<String, Boolean> permissions = new Map<String, Boolean>{
                 'isCustom' => permissionSet.isCustom,
@@ -40,12 +40,7 @@ public with sharing class ObjectPermissionsHandler {
 
             if (!ops.isEmpty()) {
                 ObjectPermissions op = ops[0];
-                permissions.put('Read', op.PermissionsRead);
-                permissions.put('Create', op.PermissionsCreate);
-                permissions.put('Edit', op.PermissionsEdit);
-                permissions.put('Delete', op.PermissionsDelete);
-                permissions.put('ViewAll', op.PermissionsViewAllRecords);
-                permissions.put('ModifyAll', op.PermissionsModifyAllRecords);
+                setMapPermissions(permissions, op);
             }
 
             return permissions;
@@ -58,27 +53,12 @@ public with sharing class ObjectPermissionsHandler {
     public static Map<String, Map<String, Boolean>> getAllObjectPermissions(Id profileId) {
         Map<String, Map<String, Boolean>> profileObjectPermissions = new Map<String, Map<String, Boolean>>();
         try {
-            List<ObjectPermissions> ops = [
-                SELECT
-                    SobjectType,
-                    PermissionsRead,
-                    PermissionsCreate,
-                    PermissionsEdit,
-                    PermissionsDelete,
-                    PermissionsViewAllRecords,
-                    PermissionsModifyAllRecords
-                FROM ObjectPermissions
-                WHERE Parent.isOwnedByProfile = TRUE AND Parent.ProfileId = :profileId
-            ];
+            Id permissionSetId = PermissionSetHandler.getPermissionSet(profileId).Id;
+            List<ObjectPermissions> ops = getExistingPermissions(permissionSetId, null);
 
             for (ObjectPermissions op : ops) {
                 Map<String, Boolean> permissions = new Map<String, Boolean>();
-                permissions.put('Read', op.PermissionsRead);
-                permissions.put('Create', op.PermissionsCreate);
-                permissions.put('Edit', op.PermissionsEdit);
-                permissions.put('Delete', op.PermissionsDelete);
-                permissions.put('ViewAll', op.PermissionsViewAllRecords);
-                permissions.put('ModifyAll', op.PermissionsModifyAllRecords);
+                setMapPermissions(permissions, op);
                 profileObjectPermissions.put(op.SobjectType, permissions);
             }
 
@@ -88,7 +68,7 @@ public with sharing class ObjectPermissionsHandler {
                 profileObjectPermissions.putAll(getMissingObjects(objectsAdded));
             }
 
-            return sortMap(profileObjectPermissions);
+            return Utils.sortMapByKeys(profileObjectPermissions);
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
@@ -119,23 +99,23 @@ public with sharing class ObjectPermissionsHandler {
         update op;
     }
 
-    private static List<ObjectPermissions> getExistingObjectPermissions(
-        Id profileId,
-        Id PermissionSetId,
-        String sobjectName
-    ) {
-        return [
-            SELECT
-                SobjectType,
-                PermissionsRead,
-                PermissionsCreate,
-                PermissionsEdit,
-                PermissionsDelete,
-                PermissionsViewAllRecords,
-                PermissionsModifyAllRecords
-            FROM ObjectPermissions
-            WHERE ParentId = :permissionSetId AND SobjectType = :sobjectName
-        ];
+    private static void setMapPermissions(Map<String, Boolean> permissions, ObjectPermissions op) {
+        permissions.put('Read', op.PermissionsRead);
+        permissions.put('Create', op.PermissionsCreate);
+        permissions.put('Edit', op.PermissionsEdit);
+        permissions.put('Delete', op.PermissionsDelete);
+        permissions.put('ViewAll', op.PermissionsViewAllRecords);
+        permissions.put('ModifyAll', op.PermissionsModifyAllRecords);
+    }
+
+    private static List<ObjectPermissions> getExistingPermissions(Id PermissionSetId, String sobjectName) {
+        String query = 'SELECT SobjectType, PermissionsRead, PermissionsCreate, PermissionsEdit, PermissionsDelete, PermissionsViewAllRecords, PermissionsModifyAllRecords FROM ObjectPermissions WHERE ParentId = :permissionSetId';
+
+        if (sobjectName != null) {
+            query += ' AND SobjectType = :sobjectName';
+        }
+
+        return Database.query(query);
     }
 
     private static Boolean areMissingObjects(Set<String> objectsAdded) {
@@ -162,18 +142,5 @@ public with sharing class ObjectPermissionsHandler {
         }
 
         return missingPermissions;
-    }
-
-    private static Map<String, Map<String, Boolean>> sortMap(Map<String, Map<String, Boolean>> unorderedMap) {
-        Map<String, Map<String, Boolean>> orderedMap = new Map<String, Map<String, Boolean>>();
-
-        Map<String, Object> input = (Map<String, Object>) unorderedMap;
-        Map<String, Object> sorted = Utils.sortMapByKeys(input);
-
-        for (String key : sorted.keySet()) {
-            orderedMap.put(key, (Map<String, Boolean>) sorted.get(key));
-        }
-
-        return orderedMap;
     }
 }

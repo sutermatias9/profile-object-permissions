@@ -29,17 +29,16 @@ public with sharing class Utils {
         return false;
     }
 
-    public static Map<String, Object> sortMapByKeys(Map<String, Object> m) {
-        Map<String, Object> orderedMap = new Map<String, Object>();
-        Map<String, Object> unorderedMap = new Map<String, Object>(m);
-        List<String> keys = new List<String>(unorderedMap.keySet());
+    public static Map<String, Map<String, Boolean>> sortMapByKeys(Map<String, Map<String, Boolean>> unordered) {
+        Map<String, Map<String, Boolean>> ordered = new Map<String, Map<String, Boolean>>();
+        List<String> keys = new List<String>(unordered.keySet());
 
         keys.sort();
 
         for (String key : keys) {
-            orderedMap.put(key, unorderedMap.get(key));
+            ordered.put(key, unordered.get(key));
         }
 
-        return orderedMap;
+        return ordered;
     }
 }
