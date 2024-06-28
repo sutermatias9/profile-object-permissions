@@ -113,6 +113,9 @@ public with sharing class ObjectPermissionsHandler {
 
         if (sobjectName != null) {
             query += ' AND SobjectType = :sobjectName';
+        } else {
+            Set<String> sobjects = SObjectHandler.getSObjects().keySet();
+            query += ' AND SobjectType IN :sobjects';
         }
 
         return Database.query(query);

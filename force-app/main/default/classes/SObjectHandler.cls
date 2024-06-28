@@ -21,11 +21,7 @@ public with sharing class SObjectHandler {
             }
         }
 
-        if (!objects.isEmpty()) {
-            return objects;
-        }
-
-        return null;
+        return objects;
     }
 
     public static List<String> getFields(String sObjectName) {
