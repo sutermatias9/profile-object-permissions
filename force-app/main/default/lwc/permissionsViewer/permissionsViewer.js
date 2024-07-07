@@ -10,8 +10,8 @@ export default class PermissionsViewer extends LightningElement {
     mainPermissions;
     comparePermissions;
 
-    viewSelected = 'object';
-    sObjectSelected = null;
+    view = 'object';
+    sobject = null;
     mainProfile = null;
     compareProfile = null;
 
@@ -25,7 +25,7 @@ export default class PermissionsViewer extends LightningElement {
     }
 
     get isFieldView() {
-        return this.viewSelected === 'field';
+        return this.view === 'field';
     }
 
     get isMainNull() {
@@ -38,7 +38,7 @@ export default class PermissionsViewer extends LightningElement {
         if (this.isFieldView) {
             this.template.querySelector('.object-input').reportValidity();
 
-            if (this.sObjectSelected && this.mainProfile) {
+            if (this.sobject && this.mainProfile) {
                 this.buildTable();
             }
         } else if (this.mainProfile) {
@@ -47,7 +47,7 @@ export default class PermissionsViewer extends LightningElement {
     }
 
     handleObjectChange(event) {
-        this.sObjectSelected = event.detail.value;
+        this.sobject = event.detail.value;
     }
 
     handleProfileChange(event) {
@@ -59,24 +59,27 @@ export default class PermissionsViewer extends LightningElement {
         } else {
             this.compareProfile = profileId;
         }
-
-        console.log('main: ' + this.mainProfile);
-        console.log('compare: ' + this.compareProfile);
     }
 
     handleViewChange(event) {
-        this.sObjectSelected = null;
+        this.view = event.detail.value;
+        this.resetVariables();
+    }
+
+    resetVariables() {
+        this.sobject = null;
         this.mainProfile = null;
         this.compareProfile = null;
+        this.mainPermissions = null;
+        this.comparePermissions = null;
         this.showTables = false;
-        this.viewSelected = event.detail.value;
     }
 
     async buildTable() {
-        this.mainPermissions = await this.getProfilePermissions(this.mainProfile, this.sObjectSelected);
+        this.mainPermissions = await this.getProfilePermissions(this.mainProfile, this.sobject);
 
         if (this.compareProfile) {
-            this.comparePermissions = await this.getProfilePermissions(this.compareProfile, this.sObjectSelected);
+            this.comparePermissions = await this.getProfilePermissions(this.compareProfile, this.sobject);
         }
 
         this.showTables = true;
