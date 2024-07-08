@@ -25,21 +25,29 @@ public with sharing class SObjectHandler {
     }
 
     public static List<String> getFields(String sObjectName) {
-        List<Schema.SObjectField> filteredFields = new List<Schema.SObjectField>();
+        List<String> filteredFields = new List<String>();
 
-        Schema.DescribeSObjectResult sobjectDescribe = Schema.getGlobalDescribe().get(sObjectName).getDescribe();
-        List<Schema.SObjectField> fieldList = sobjectDescribe.fields.getMap().values();
+        try {
+            Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(sObjectName);
 
-        for (Schema.SObjectField f : fieldList) {
-            Schema.DescribeFieldResult df = f.getDescribe();
-            String name = df.getName();
+            Schema.DescribeSObjectResult sobjectDescribe = sObjectType.getDescribe();
+            List<Schema.SObjectField> fieldList = sobjectDescribe.fields.getMap().values();
 
-            if (df.isPermissionable() && !Utils.isAddressComponent(name)) {
-                filteredFields.add(f);
+            for (Schema.SObjectField f : fieldList) {
+                Schema.DescribeFieldResult df = f.getDescribe();
+                String name = df.getName();
+
+                if (df.isPermissionable() && !isAddressComponent(name)) {
+                    filteredFields.add(name);
+                }
             }
+        } catch (NullPointerException e) {
+            throw new IllegalArgumentException(
+                'Invalid SObject Name in getFields: ' + sObjectName + '. ' + e.getMessage()
+            );
         }
 
-        return Utils.getFieldsAsString(filteredFields);
+        return filteredFields;
     }
 
     private static Boolean meetsNameCriteria(String name) {
@@ -48,5 +56,25 @@ public with sharing class SObjectHandler {
             !name.contains('History') &&
             !name.contains('Share') &&
             !name.contains('Access');
+    }
+
+    private static Boolean isAddressComponent(String field) {
+        List<String> components = new List<String>{
+            'Street',
+            'City',
+            'State',
+            'PostalCode',
+            'Country',
+            'Latitude',
+            'Longitude',
+            'GeocodeAccuracy'
+        };
+
+        for (String c : components) {
+            if (field.contains(c)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
