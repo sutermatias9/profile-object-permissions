@@ -43,4 +43,12 @@ public with sharing class TestDataFactory {
 
         return psa;
     }
+
+    public static PermissionSet createProfilePermissionSet(Id profileId) {
+        User u = createUser(profileId, true);
+        PermissionSet ps = createPermissionSet(profileId, true);
+        PermissionSetAssignment psa = createPermissionSetAssignment(u.Id, ps.Id, true);
+
+        return ps;
+    }
 }

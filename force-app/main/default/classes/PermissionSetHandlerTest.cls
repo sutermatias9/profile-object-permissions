@@ -4,9 +4,7 @@ public with sharing class PermissionSetHandlerTest {
     static void testGetPermissionSetWithStandardProfile() {
         Id profileId = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1].Id;
 
-        User u = TestDataFactory.createUser(profileId, true);
-        PermissionSet ps = TestDataFactory.createPermissionSet(profileId, true);
-        PermissionSetAssignment psa = TestDataFactory.createPermissionSetAssignment(u.Id, ps.Id, true);
+        TestDataFactory.createProfilePermissionSet(profileId);
 
         Test.startTest();
         PermissionSet result = PermissionSetHandler.getPermissionSet(profileId);
@@ -20,9 +18,7 @@ public with sharing class PermissionSetHandlerTest {
     static void testGetPermissionSetWithCustomProfile() {
         Id profileId = [SELECT Id FROM Profile WHERE Name = 'Test profile' LIMIT 1].Id;
 
-        User u = TestDataFactory.createUser(profileId, true);
-        PermissionSet ps = TestDataFactory.createPermissionSet(profileId, true);
-        PermissionSetAssignment psa = TestDataFactory.createPermissionSetAssignment(u.Id, ps.Id, true);
+        TestDataFactory.createProfilePermissionSet(profileId);
 
         Test.startTest();
         PermissionSet result = PermissionSetHandler.getPermissionSet(profileId);
