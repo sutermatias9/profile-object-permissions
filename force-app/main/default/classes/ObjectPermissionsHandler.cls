@@ -15,7 +15,7 @@ public with sharing class ObjectPermissionsHandler {
                 createRecord(permissionSetId, sobjectName, permissions);
             } else {
                 ObjectPermissions op = ops[0];
-                updateRecord(op, permissions);
+                updateRecord(op, sobjectName, permissions);
             }
         } catch (Exception e) {
             throw new AuraHandledException('Error setting permissions: ' + e.getMessage());
@@ -75,6 +75,9 @@ public with sharing class ObjectPermissionsHandler {
     }
 
     private static void createRecord(Id permissionSetId, String sobjectName, Map<String, Boolean> permissions) {
+        // sobjects that only have Create, Read, Edit, Delete permissions.
+        List<String> CREDsObjects = new List<String>{ 'Product2', 'PushTopic', 'Pricebook2', 'Idea' };
+
         ObjectPermissions op = new ObjectPermissions();
         op.ParentId = permissionSetId;
         op.SobjectType = sobjectName;
@@ -82,19 +85,26 @@ public with sharing class ObjectPermissionsHandler {
         op.PermissionsCreate = permissions.get('Create');
         op.PermissionsEdit = permissions.get('Edit');
         op.PermissionsDelete = permissions.get('Delete');
-        op.PermissionsViewAllRecords = permissions.get('ViewAll');
-        op.PermissionsModifyAllRecords = permissions.get('ModifyAll');
+
+        if (!CREDsObjects.contains(sobjectName)) {
+            op.PermissionsViewAllRecords = permissions.get('ViewAll');
+            op.PermissionsModifyAllRecords = permissions.get('ModifyAll');
+        }
 
         insert op;
     }
 
-    private static void updateRecord(ObjectPermissions op, Map<String, Boolean> permissions) {
+    private static void updateRecord(ObjectPermissions op, String sobjectName, Map<String, Boolean> permissions) {
+        List<String> CREDsObjects = new List<String>{ 'Product2', 'PushTopic', 'Pricebook2', 'Idea' };
+
         op.PermissionsRead = permissions.get('Read');
         op.PermissionsCreate = permissions.get('Create');
         op.PermissionsEdit = permissions.get('Edit');
         op.PermissionsDelete = permissions.get('Delete');
-        op.PermissionsViewAllRecords = permissions.get('ViewAll');
-        op.PermissionsModifyAllRecords = permissions.get('ModifyAll');
+        if (!CREDsObjects.contains(sobjectName)) {
+            op.PermissionsViewAllRecords = permissions.get('ViewAll');
+            op.PermissionsModifyAllRecords = permissions.get('ModifyAll');
+        }
 
         update op;
     }

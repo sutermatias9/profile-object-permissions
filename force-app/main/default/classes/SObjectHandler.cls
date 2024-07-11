@@ -1,9 +1,10 @@
 public with sharing class SObjectHandler {
     @AuraEnabled(cacheable=true)
     public static Map<String, String> getSObjects() {
-        Map<String, String> objects = new Map<String, String>();
-
+        List<String> permissionableObjects = getPermissionableObjects();
         Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
+
+        Map<String, String> objects = new Map<String, String>();
 
         for (Schema.SObjectType sobjType : globalDescribe.values()) {
             Schema.DescribeSObjectResult objectDescription = sobjType.getDescribe();
@@ -11,14 +12,21 @@ public with sharing class SObjectHandler {
             String apiName = objectDescription.getName();
             String label = objectDescription.getLabel();
 
-            if (
-                meetsNameCriteria(apiName) &&
-                objectDescription.isCreateable() &&
-                !objectDescription.isCustomSetting() &&
-                objectDescription.getRecordTypeInfos().size() > 0
-            ) {
+            if (permissionableObjects.contains(apiName)) {
                 objects.put(apiName, label);
             }
+        }
+
+        return objects;
+    }
+
+    public static List<String> getPermissionableObjects() {
+        List<Schema.PicklistEntry> entries = ObjectPermissions.SobjectType.getDescribe().getPicklistValues();
+
+        List<String> objects = new List<String>();
+
+        for (Schema.PicklistEntry entry : entries) {
+            objects.add(entry.getValue());
         }
 
         return objects;
@@ -48,14 +56,6 @@ public with sharing class SObjectHandler {
         }
 
         return filteredFields;
-    }
-
-    private static Boolean meetsNameCriteria(String name) {
-        return !name.contains('ChangeEvent') &&
-            !name.contains('Feed') &&
-            !name.contains('History') &&
-            !name.contains('Share') &&
-            !name.contains('Access');
     }
 
     private static Boolean isAddressComponent(String field) {
