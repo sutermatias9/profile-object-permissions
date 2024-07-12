@@ -9,8 +9,109 @@ public with sharing class ObjectPermissionsHandlerTest {
         'ModifyAll'
     };
 
-    @TestSetup
-    static void makeData() {
+    @isTest
+    static void testSetPermissionsProfileHadPermissions() {
+        Id profileId = [SELECT Id FROM Profile WHERE Name = 'Test profile' LIMIT 1].Id;
+
+        Map<String, Boolean> permissions = new Map<String, Boolean>{
+            'Read' => true,
+            'Create' => false,
+            'Edit' => true,
+            'Delete' => false,
+            'ViewAll' => false,
+            'ModifyAll' => false
+        };
+
+        String sobjectName = 'Account';
+
+        Test.startTest();
+        ObjectPermissionsHandler.setPermissions(sobjectName, profileId, JSON.serialize(permissions));
+        Test.stopTest();
+
+        List<ObjectPermissions> ops = [
+            SELECT
+                PermissionsRead,
+                PermissionsCreate,
+                PermissionsEdit,
+                PermissionsDelete,
+                PermissionsViewAllRecords,
+                PermissionsModifyAllRecords
+            FROM ObjectPermissions
+            WHERE Parent.ProfileId = :profileId AND SobjectType = :sobjectName
+        ];
+
+        Assert.isTrue(ops.size() == 1);
+
+        ObjectPermissions result = ops[0];
+
+        Assert.isTrue(result.PermissionsRead && result.PermissionsEdit, 'Read and Edit permissions should be true,');
+        Assert.isFalse(
+            result.PermissionsCreate ||
+                result.PermissionsDelete ||
+                result.PermissionsViewAllRecords ||
+                result.PermissionsModifyAllRecords,
+            'Create, Delete, View All and Modify All permissions should be false.'
+        );
+    }
+
+    @isTest
+    static void testSetPermissionsProfileWithoutPermissions() {
+        Id profileId = [SELECT Id FROM Profile WHERE Name = 'Test profile' LIMIT 1].Id;
+
+        Map<String, Boolean> permissions = new Map<String, Boolean>{
+            'Read' => true,
+            'Create' => false,
+            'Edit' => true,
+            'Delete' => true,
+            'ViewAll' => true,
+            'ModifyAll' => true
+        };
+
+        String sobjectName = 'Lead';
+
+        Test.startTest();
+        ObjectPermissionsHandler.setPermissions(sobjectName, profileId, JSON.serialize(permissions));
+        Test.stopTest();
+
+        List<ObjectPermissions> ops = [
+            SELECT
+                PermissionsRead,
+                PermissionsCreate,
+                PermissionsEdit,
+                PermissionsDelete,
+                PermissionsViewAllRecords,
+                PermissionsModifyAllRecords
+            FROM ObjectPermissions
+            WHERE Parent.ProfileId = :profileId AND SobjectType = :sobjectName
+        ];
+
+        Assert.isTrue(ops.size() == 1);
+
+        ObjectPermissions result = ops[0];
+
+        Assert.isTrue(
+            result.PermissionsRead &&
+                result.PermissionsEdit &&
+                result.PermissionsDelete &&
+                result.PermissionsViewAllRecords &&
+                result.PermissionsModifyAllRecords,
+            'Read, Edit, Delete, View All and Modify All permissions should be true,'
+        );
+        Assert.isFalse(result.PermissionsCreate, 'Create permission should be false.');
+    }
+
+    @isTest
+    static void testSetPermissionsInvalidProfile() {
+        try {
+            ObjectPermissionsHandler.setPermissions('Account', '000000000000001', 'permissionJSON');
+            Assert.fail('An exception was expected');
+        } catch (Exception e) {
+            Assert.areEqual(
+                'System.AuraHandledException',
+                e.getTypeName(),
+                'A System.AuraHandledException was expected.'
+            );
+        }
     }
 
     @isTest
