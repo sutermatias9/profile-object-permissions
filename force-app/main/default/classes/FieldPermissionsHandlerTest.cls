@@ -1,6 +1,59 @@
 @isTest
 public with sharing class FieldPermissionsHandlerTest {
     @isTest
+    static void testSetPermissions() {
+        Id profileId = [SELECT Id FROM Profile WHERE Name = 'Test profile' LIMIT 1].Id;
+        String sobjectName = 'Account';
+
+        List<FieldPermissionsHandler.FieldPermissionsInfo> testPermissions = new List<FieldPermissionsHandler.FieldPermissionsInfo>();
+
+        testPermissions.add(new FieldPermissionsHandler.FieldPermissionsInfo('Phone', true, false));
+        testPermissions.add(new FieldPermissionsHandler.FieldPermissionsInfo('Description', false, false));
+        testPermissions.add(new FieldPermissionsHandler.FieldPermissionsInfo('Type', true, true));
+        testPermissions.add(new FieldPermissionsHandler.FieldPermissionsInfo('CleanStatus', true, true));
+
+        String permissionsJSON = JSON.serialize(testPermissions);
+
+        Test.startTest();
+        FieldPermissionsHandler.setPermissions(profileId, sobjectName, permissionsJSON);
+        Test.stopTest();
+
+        List<FieldPermissions> result = [
+            SELECT Id, SobjectType, Field, PermissionsEdit, PermissionsRead
+            FROM FieldPermissions
+            WHERE SobjectType = :sobjectName AND Parent.ProfileId = :profileId
+        ];
+
+        for (FieldPermissions fp : result) {
+            if (fp.Field == 'Phone') {
+                Assert.isTrue(fp.PermissionsRead && !fp.PermissionsEdit);
+            } else if (fp.Field == 'Description') {
+                Assert.isTrue(!fp.PermissionsRead && !fp.PermissionsEdit);
+            } else if (fp.Field == 'Type') {
+                Assert.isTrue(fp.PermissionsRead && fp.PermissionsEdit);
+            } else if (fp.Field == 'CleanStatus') {
+                Assert.isTrue(fp.PermissionsRead && fp.PermissionsEdit);
+            }
+        }
+    }
+
+    @isTest
+    static void testSetPermissionInvalidProfileId() {
+        FieldPermissionsHandler.FieldPermissionsInfo testPermissions = new FieldPermissionsHandler.FieldPermissionsInfo(
+            'CleanStatus',
+            true,
+            true
+        );
+
+        try {
+            FieldPermissionsHandler.setPermissions('000000000000001', 'Account', JSON.serialize(testPermissions));
+            Assert.fail('An exception was expected.');
+        } catch (Exception e) {
+            Assert.areEqual('System.AuraHandledException', e.getTypeName());
+        }
+    }
+
+    @isTest
     static void testGetFieldPermissions() {
         Id profileId = [SELECT Id FROM Profile WHERE Name = 'Test profile' LIMIT 1].Id;
 
