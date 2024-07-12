@@ -1,24 +1,31 @@
 public with sharing class FieldPermissionsHandler {
-    public class TogglesInfoWrapper {
+    public class FieldPermissionsInfo {
         public String field;
         public Boolean read;
         public Boolean edit;
+
+        public FieldPermissionsInfo(String field, Boolean read, Boolean edit) {
+            this.field = field;
+            this.read = read;
+            this.edit = edit;
+        }
     }
 
     @AuraEnabled
     public static void setPermissions(Id profileId, String sobjectName, String permissionsJSON) {
         try {
-            List<TogglesInfoWrapper> togglesInfo = (List<TogglesInfoWrapper>) JSON.deserialize(
+            List<FieldPermissionsInfo> permissionsInfo = (List<FieldPermissionsInfo>) JSON.deserialize(
                 permissionsJSON,
-                List<TogglesInfoWrapper>.class
+                List<FieldPermissionsInfo>.class
             );
             Id permissionSetId = PermissionSetHandler.getPermissionSet(profileId).Id;
             List<FieldPermissions> fps = getExistingPermissions(profileId, sobjectName, permissionSetId);
             List<FieldPermissions> recordsToUpsert = new List<FieldPermissions>();
             List<String> fieldNames = getFieldNames(fps);
 
-            for (TogglesInfoWrapper info : togglesInfo) {
+            for (FieldPermissionsInfo info : permissionsInfo) {
                 info.field = sobjectName + '.' + info.field;
+
                 FieldPermissions record;
 
                 if (fieldNames.contains(info.field)) {
@@ -122,7 +129,7 @@ public with sharing class FieldPermissionsHandler {
         return record;
     }
 
-    private static FieldPermissions createRecord(Id permissionSetId, String sobjectName, TogglesInfoWrapper info) {
+    private static FieldPermissions createRecord(Id permissionSetId, String sobjectName, FieldPermissionsInfo info) {
         FieldPermissions record = new FieldPermissions();
         record.ParentId = permissionSetId;
         record.SobjectType = sobjectName;
